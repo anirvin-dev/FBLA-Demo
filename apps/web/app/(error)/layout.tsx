@@ -1,8 +1,6 @@
 import { Button } from "@repo/ui/components/button";
 import Link from "next/link";
 
-
-
 export default function ErrorPageLayout({
 	children,
 }: {
