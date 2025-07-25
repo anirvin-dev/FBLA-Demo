@@ -127,7 +127,7 @@ export class AttendanceService {
       const lastDate = new Date(lastOperation.date);
       const currentDate = new Date();
 
-      if (currentDate.getTime() - lastDate.getTime() < 1000 * 60 * 60 * 3) {
+      if (currentDate.getTime() - lastDate.getTime() < 1000 * 60 * 60 * 3.5) {
         return {
           success: false,
           message: 'You are currently signed in.',
