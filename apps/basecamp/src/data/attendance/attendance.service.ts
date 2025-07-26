@@ -134,25 +134,31 @@ export class AttendanceService {
         };
       } else {
         try {
-          const result = await this.performAttendanceOperation(
+          const halfCreditResult = await this.performAttendanceOperation(
             discordId,
             discordName,
             guildId,
             'signOut',
             new Date(currentDate.getTime() - 1000 * 60 * 60 * 1.5),
           );
+          const newSigninResult = await this.performAttendanceOperation(
+            discordId,
+            discordName,
+            guildId,
+            'signIn',
+          );
 
-          if (result) {
+          if (halfCreditResult && newSigninResult) {
             return {
               success: false,
-              message: 'You signed in last meeting but did not sign out. You will be credited for 1.5 hours of attendance for that meeting.'
+              message: 'You signed in last meeting but did not sign out. You will be credited for 1.5 hours of attendance for that meeting.\n Signed in successfully.'
             }
           }
         } catch (error) {
           this.logger.error(`Failed to sign in: ${error}`);
           return {
             success: false,
-            message: "You have signed in successfully, but you did not sign out last time, so you will receive half credit for the previous meeting",
+            message: 'Failed to sign in.',
           };
         }
       }
