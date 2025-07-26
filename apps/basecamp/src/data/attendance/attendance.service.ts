@@ -223,4 +223,33 @@ export class AttendanceService {
       };
     }
   }
+
+  /**
+   * Get the total hours worked by a user
+   * @param discordId The Discord ID of the user
+   *
+   * @throws Error if the attendance record is invalid
+   * @returns The total hours worked by the user
+   */
+  public async getUserHours(discordId: string): Promise<number> {
+    const attendance = await this.getAttendance(discordId);
+
+    let hours = 0;
+    let lastSignIn: Date | null = null;
+    for (const attendanceRecord of attendance) {
+      const isSigningIn = attendanceRecord.isSigningIn;
+      const date = new Date(attendanceRecord.date);
+
+      if (isSigningIn) {
+        lastSignIn = date;
+      } else if (lastSignIn) {
+        hours += (date.getTime() - lastSignIn.getTime()) / (1000 * 60 * 60);
+        lastSignIn = null;
+      } else {
+        throw new Error('Invalid attendance record');
+      }
+    }
+
+    return hours;
+  }
 }
