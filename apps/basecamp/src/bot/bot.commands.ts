@@ -6,6 +6,10 @@ import { ChatInputCommandInteraction } from 'discord.js';
 import { HandbookService } from 'src/handbook/handbook.service';
 import { HandbookQuestionDto } from 'src/handbook/handbook-question.dto';
 
+const TOTAL_HOURS = 390;
+const MEMBER_REQUIRED_HOURS = TOTAL_HOURS * 0.75;
+const LEADERSHIP_REQUIRED_HOURS = TOTAL_HOURS * 0.85;
+
 interface RateLimitConfig {
   maxRequests: number;
   windowMs: number;
@@ -172,6 +176,50 @@ export class BotCommands {
       '\n*Please reach out to Ms. I in <#408795997410426880> if you feel our record of your outreach is incorrect*';
 
     return interaction.reply(outreachString);
+  }
+
+  @SlashCommand({
+    name: 'attendance',
+    description: 'Get your current attendance',
+  })
+  public async onAttendance(@Context() [interaction]: SlashCommandContext) {
+    const nickname = await this.getNickname(interaction);
+
+    if (!nickname) {
+      return interaction.reply('You must have a nickname to get attendance');
+    }
+
+    try {
+      const hours = await this.attendanceService.getUserHours(
+        interaction.user.id,
+      );
+
+      const hoursString = hours.toFixed(2);
+      const hoursPercentage = (hours / 390) * 100;
+      const hoursPercentageString = hoursPercentage.toFixed(2);
+
+      if (hours > LEADERSHIP_REQUIRED_HOURS) {
+        return interaction.reply(
+          `You've met the minimum hours for leadership (${hoursString} hours, ${hoursPercentageString}% of ${TOTAL_HOURS})! :tada:`,
+        );
+      } else if (hours > MEMBER_REQUIRED_HOURS) {
+        return interaction.reply(
+          `You've met the minimum hours for members (${hoursString} hours, ${hoursPercentageString}% of ${TOTAL_HOURS})! If you're on leadership, you still have ${LEADERSHIP_REQUIRED_HOURS - hours} more hours to go to hit your leadership requirement.`,
+        );
+      } else {
+        return interaction.reply(
+          `You've got ${hoursString} hours (${hoursPercentageString}% of ${TOTAL_HOURS}). You have ${TOTAL_HOURS - hours} more hours to go to hit your minimum hours goal! :rocket:`,
+        );
+      }
+    } catch (error) {
+      this.logger.error(
+        `Error getting attendance for user ${interaction.user.id}:`,
+        error,
+      );
+      return interaction.reply(
+        'There was an error getting your attendance. Please let a mentor know.',
+      );
+    }
   }
 
   @SlashCommand({
