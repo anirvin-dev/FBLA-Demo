@@ -127,20 +127,38 @@ export class AttendanceService {
       const lastDate = new Date(lastOperation.date);
       const currentDate = new Date();
 
-      if (currentDate.getTime() - lastDate.getTime() < 1000 * 60 * 60 * 3) {
+      if (currentDate.getTime() - lastDate.getTime() < 1000 * 60 * 60 * 3.5) {
         return {
           success: false,
           message: 'You are currently signed in.',
         };
       } else {
         try {
-          await this.performAttendanceOperation(
+          const halfCreditResult = await this.performAttendanceOperation(
             discordId,
             discordName,
             guildId,
             'signOut',
             new Date(currentDate.getTime() - 1000 * 60 * 60 * 1.5),
           );
+          const newSigninResult = await this.performAttendanceOperation(
+            discordId,
+            discordName,
+            guildId,
+            'signIn',
+          );
+
+          if (halfCreditResult && newSigninResult) {
+            return {
+              success: false,
+              message: 'You signed in last meeting but did not sign out. You will be credited for 1.5 hours of attendance for that meeting.\n Signed in successfully.',
+            }
+          } else {
+            return {
+              success: false,
+              message: 'Failed to sign in',
+            }
+          }
         } catch (error) {
           this.logger.error(`Failed to sign in: ${error}`);
           return {
