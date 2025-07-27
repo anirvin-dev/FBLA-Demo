@@ -33,5 +33,9 @@ describe('AttendanceService', () => {
                 },
             ],
         }).compile();
+        
+        service = module.get<AttendanceService>(AttendanceService);
+        sheetService = module.get(SheetService);
+        configService = module.get(ConfigService);
   });})
   
