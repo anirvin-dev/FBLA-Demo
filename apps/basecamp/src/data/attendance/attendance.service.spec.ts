@@ -41,4 +41,8 @@ describe('AttendanceService', () => {
   afterEach(() => {
     jest.clearAllMocks();
 });
+
+it('should be defined',() => {
+    expect(service).toBeDefined();
+});
 });
