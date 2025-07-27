@@ -45,4 +45,17 @@ describe('AttendanceService', () => {
 it('should be defined',() => {
     expect(service).toBeDefined();
 });
+describe('getAttendance', () => {
+    it('should return empty array when no attendance records exist', async () => {
+        sheetService.getSheetValues.mockResolvedValue([]);
+        
+        const result = await service.getAttendance('user1');
+        
+        expect(result).toEqual([]);
+        expect(sheetService.getSheetValues).toHaveBeenCalledWith(
+            'test-sheet-id',
+            'Attendance!A:E'
+        );
+    });
+});
 });
