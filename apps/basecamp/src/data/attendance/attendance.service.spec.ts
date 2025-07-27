@@ -4,3 +4,5 @@ import { SheetService } from '../../sheet/sheet.service';
 import { ConfigService } from '@nestjs/config';
 import { Logger } from '@nestjs/common';
 
+describe('AttendanceService', () => {
+  });
