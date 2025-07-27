@@ -194,8 +194,8 @@ export class BotCommands {
         interaction.user.id,
       );
 
-      const hoursString = hours.toFixed(2);
-      const hoursPercentage = (hours / 390) * 100;
+      const hoursString = Math.round(hours);
+      const hoursPercentage = Math.round((hours / TOTAL_HOURS) * 100);
       const hoursPercentageString = hoursPercentage.toFixed(2);
 
       if (hours >= LEADERSHIP_REQUIRED_HOURS) {
@@ -204,11 +204,11 @@ export class BotCommands {
         );
       } else if (hours >= MEMBER_REQUIRED_HOURS) {
         return interaction.reply(
-          `You've met the minimum hours for members (${hoursString} hours, ${hoursPercentageString}% of ${TOTAL_HOURS})! If you're on leadership, you still have ${LEADERSHIP_REQUIRED_HOURS - hours} more hours to go to hit your leadership requirement.`,
+          `You've met the minimum hours for members (${hoursString} hours, ${hoursPercentageString}% of ${TOTAL_HOURS})! If you're on leadership, you still have ${Math.ceil(LEADERSHIP_REQUIRED_HOURS - hours)} more hours to go to hit your leadership requirement.`,
         );
       } else {
         return interaction.reply(
-          `You've got ${hoursString} hours (${hoursPercentageString}% of ${TOTAL_HOURS}). You have ${MEMBER_REQUIRED_HOURS - hours} more hours to go to hit your minimum hours goal! :rocket:`,
+          `You've got ${hoursString} hours (${hoursPercentageString}% of ${TOTAL_HOURS}). You have ${Math.ceil(MEMBER_REQUIRED_HOURS - hours)} more hours to go to hit your minimum hours goal! :rocket:`,
         );
       }
     } catch (error) {
