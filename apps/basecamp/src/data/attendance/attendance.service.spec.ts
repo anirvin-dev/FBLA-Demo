@@ -8,4 +8,10 @@ describe('AttendanceService', () => {
     let service: AttendanceService;
     let sheetService: jest.Mocked<SheetService>;
     let configService: jest.Mocked<ConfigService>;
+    
+    const mockAttendanceData = [
+        // User1's attendance
+        ['user1', 'YETI Robotics', 'Test User 1', '2025-01-01T10:00:00Z', 'true'],  // Sign in
+        ['user1', 'YETI Robotics', 'Test User 1', '2025-01-01T12:00:00Z', 'false'], // Sign out
+    ];
   });
