@@ -83,4 +83,19 @@ describe('getAttendance', () => {
         expect(result[0].isSigningIn).toBe(true);
         expect(result[1].isSigningIn).toBe(false);
 });
+
+it('should return empty array when user has no attendance records', async () => {
+    // Mock data with only user2's records
+    const otherUserData = [
+        ['user2', 'YETI Robotics', 'Test User 2', '2025-01-01T10:00:00Z', 'true'],
+        ['user2', 'YETI Robotics', 'Test User 2', '2025-01-01T12:00:00Z', 'false'],
+    ];
+    sheetService.getSheetValues.mockResolvedValue(otherUserData);
+    
+    // Try to get attendance for user1, who has no records
+    const result = await service.getAttendance('user1');
+    
+    // Should return empty array since user1 has no records
+    expect(result).toEqual([]);
+});
 });});
