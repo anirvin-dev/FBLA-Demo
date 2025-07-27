@@ -32,6 +32,13 @@
 	"pnpm": {
 		"overrides": {
 			"esbuild": "^0.25.0"
-		}
+		},
+		"onlyBuiltDependencies": [
+			"@nestjs/core",
+			"@swc/core",
+			"@tailwindcss/oxide",
+			"esbuild",
+			"sharp"
+		]
 	}
 }
