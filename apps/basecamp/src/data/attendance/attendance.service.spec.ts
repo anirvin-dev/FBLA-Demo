@@ -14,4 +14,24 @@ describe('AttendanceService', () => {
         ['user1', 'YETI Robotics', 'Test User 1', '2025-01-01T10:00:00Z', 'true'],  // Sign in
         ['user1', 'YETI Robotics', 'Test User 1', '2025-01-01T12:00:00Z', 'false'], // Sign out
     ];
-  });
+    beforeEach(async () => {
+        const module: TestingModule = await Test.createTestingModule({
+            providers: [
+                AttendanceService,
+                {
+                    provide: SheetService,
+                    useValue: {
+                        getSheetValues: jest.fn(),
+                        appendSheetValues: jest.fn(),
+                    },
+                },
+                {
+                    provide: ConfigService,
+                    useValue: {
+                        get: jest.fn(),
+                    },
+                },
+            ],
+        }).compile();
+  });})
+  
