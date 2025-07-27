@@ -37,6 +37,19 @@ describe('AttendanceService', () => {
         service = module.get<AttendanceService>(AttendanceService);
         sheetService = module.get(SheetService);
         configService = module.get(ConfigService);
+
+        configService.get.mockImplementation((key: string) => {
+            switch (key) {
+                case 'ATTENDANCE_SPREADSHEET_ID':
+                    return 'test-sheet-id';
+                case 'YETI_SERVER_ID':
+                    return 'yeti-server-id';
+                case 'DEV_GUILD_ID':
+                    return 'dev-guild-id';
+                default:
+                    return null;
+            }
+        });
   });
   afterEach(() => {
     jest.clearAllMocks();
