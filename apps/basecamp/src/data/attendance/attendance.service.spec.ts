@@ -70,5 +70,17 @@ describe('getAttendance', () => {
             'Attendance!A:E'
         );
     });
+    it('should return filtered attendance records for a specific user', async () => {
+        sheetService.getSheetValues.mockResolvedValue(mockAttendanceData);
+        
+        const result = await service.getAttendance('user1');
+        
+        // Should return 2 records (1 sign-in and 1 sign-out)
+        expect(result).toHaveLength(2);
+        // All records should belong to user1
+        expect(result.every(record => record.discordId === 'user1')).toBe(true);
+        // Should maintain the order of records
+        expect(result[0].isSigningIn).toBe(true);
+        expect(result[1].isSigningIn).toBe(false);
 });
-});
+});});
