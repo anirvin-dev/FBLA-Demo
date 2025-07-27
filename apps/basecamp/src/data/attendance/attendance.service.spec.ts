@@ -5,7 +5,7 @@ import { ConfigService } from '@nestjs/config';
 
 describe('AttendanceService', () => {
     let service: AttendanceService;
-    let sheetService: jest.Mocked<SheetService>;
+    let sheetService: jest.Mocked<Pick<SheetService, 'getSheetValues' | 'appendSheetValues'>>;
 
     const mockAttendanceData = [
     ['user1', 'YETI Robotics', 'Test User 1', '2025-01-01T10:00:00Z', 'true'],
