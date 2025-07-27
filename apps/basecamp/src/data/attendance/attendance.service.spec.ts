@@ -37,5 +37,8 @@ describe('AttendanceService', () => {
         service = module.get<AttendanceService>(AttendanceService);
         sheetService = module.get(SheetService);
         configService = module.get(ConfigService);
-  });})
-  
+  });
+  afterEach(() => {
+    jest.clearAllMocks();
+});
+});
