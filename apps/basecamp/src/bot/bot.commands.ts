@@ -208,7 +208,7 @@ export class BotCommands {
         );
       } else {
         return interaction.reply(
-          `You've got ${hoursString} hours (${hoursPercentageString}% of ${TOTAL_HOURS}). You have ${TOTAL_HOURS - hours} more hours to go to hit your minimum hours goal! :rocket:`,
+          `You've got ${hoursString} hours (${hoursPercentageString}% of ${TOTAL_HOURS}). You have ${MEMBER_REQUIRED_HOURS - hours} more hours to go to hit your minimum hours goal! :rocket:`,
         );
       }
     } catch (error) {
