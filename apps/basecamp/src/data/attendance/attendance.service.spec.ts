@@ -10,15 +10,12 @@ describe('AttendanceService', () => {
     let configService: jest.Mocked<ConfigService>;
 
     const mockAttendanceData = [
-    // User1's attendance
-    ['user1', 'YETI Robotics', 'Test User 1', '2025-01-01T10:00:00Z', 'true'],  // Sign in
-    ['user1', 'YETI Robotics', 'Test User 1', '2025-01-01T12:00:00Z', 'false'], // Sign out
-    // User2's attendance
-    ['user2', 'Dev', 'Test User 2', '2025-01-02T10:00:00Z', 'true'],  // Sign in
-    ['user2', 'Dev', 'Test User 2', '2025-01-02T12:00:00Z', 'false'], // Sign out
-    // Another session for User1
-    ['user1', 'YETI Robotics', 'Test User 1', '2025-01-03T10:00:00Z', 'true'],  // Sign in
-    ['user1', 'YETI Robotics', 'Test User 1', '2025-01-03T12:00:00Z', 'false'], // Sign out
+    ['user1', 'YETI Robotics', 'Test User 1', '2025-01-01T10:00:00Z', 'true'],
+    ['user1', 'YETI Robotics', 'Test User 1', '2025-01-01T12:00:00Z', 'false'],
+    ['user2', 'Dev', 'Test User 2', '2025-01-02T10:00:00Z', 'true'],
+    ['user2', 'Dev', 'Test User 2', '2025-01-02T12:00:00Z', 'false'],
+    ['user1', 'YETI Robotics', 'Test User 1', '2025-01-03T10:00:00Z', 'true'],
+    ['user1', 'YETI Robotics', 'Test User 1', '2025-01-03T12:00:00Z', 'false'],
     ];
 
     beforeEach(async () => {
@@ -82,23 +79,18 @@ describe('AttendanceService', () => {
 
             const result = await service.getAttendance('user1');
 
-            // Expect 4 records (2 sign-ins and 2 sign-outs for user1)
             expect(result).toHaveLength(4);
             expect(result.every(record => record.discordId === 'user1')).toBe(true);
-            // Verify the first record is a sign-in
             expect(result[0].isSigningIn).toBe(true);
-            // Verify the second record is a sign-out
             expect(result[1].isSigningIn).toBe(false);
-            // Verify the third record is a sign-in
             expect(result[2].isSigningIn).toBe(true);
-            // Verify the fourth record is a sign-out
             expect(result[3].isSigningIn).toBe(false);
         });
 
-    it('should handle when user has no attendance records', async () => {
-      sheetService.getSheetValues.mockResolvedValue(mockAttendanceData);
+        it('should handle when user has no attendance records', async () => {
+            sheetService.getSheetValues.mockResolvedValue(mockAttendanceData);
 
-      const result = await service.getAttendance('nonexistent-user');
+            const result = await service.getAttendance('nonexistent-user');
 
             expect(result).toEqual([]);
         });
