@@ -198,11 +198,11 @@ export class BotCommands {
       const hoursPercentage = (hours / 390) * 100;
       const hoursPercentageString = hoursPercentage.toFixed(2);
 
-      if (hours > LEADERSHIP_REQUIRED_HOURS) {
+      if (hours >= LEADERSHIP_REQUIRED_HOURS) {
         return interaction.reply(
           `You've met the minimum hours for leadership (${hoursString} hours, ${hoursPercentageString}% of ${TOTAL_HOURS})! :tada:`,
         );
-      } else if (hours > MEMBER_REQUIRED_HOURS) {
+      } else if (hours >= MEMBER_REQUIRED_HOURS) {
         return interaction.reply(
           `You've met the minimum hours for members (${hoursString} hours, ${hoursPercentageString}% of ${TOTAL_HOURS})! If you're on leadership, you still have ${LEADERSHIP_REQUIRED_HOURS - hours} more hours to go to hit your leadership requirement.`,
         );
