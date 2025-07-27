@@ -8,12 +8,19 @@ describe('AttendanceService', () => {
     let service: AttendanceService;
     let sheetService: jest.Mocked<SheetService>;
     let configService: jest.Mocked<ConfigService>;
-    
+
     const mockAttendanceData = [
-        // User1's attendance
-        ['user1', 'YETI Robotics', 'Test User 1', '2025-01-01T10:00:00Z', 'true'],  // Sign in
-        ['user1', 'YETI Robotics', 'Test User 1', '2025-01-01T12:00:00Z', 'false'], // Sign out
+    // User1's attendance
+    ['user1', 'YETI Robotics', 'Test User 1', '2025-01-01T10:00:00Z', 'true'],  // Sign in
+    ['user1', 'YETI Robotics', 'Test User 1', '2025-01-01T12:00:00Z', 'false'], // Sign out
+    // User2's attendance
+    ['user2', 'Dev', 'Test User 2', '2025-01-02T10:00:00Z', 'true'],  // Sign in
+    ['user2', 'Dev', 'Test User 2', '2025-01-02T12:00:00Z', 'false'], // Sign out
+    // Another session for User1
+    ['user1', 'YETI Robotics', 'Test User 1', '2025-01-03T10:00:00Z', 'true'],  // Sign in
+    ['user1', 'YETI Robotics', 'Test User 1', '2025-01-03T12:00:00Z', 'false'], // Sign out
     ];
+
     beforeEach(async () => {
         const module: TestingModule = await Test.createTestingModule({
             providers: [
@@ -33,7 +40,7 @@ describe('AttendanceService', () => {
                 },
             ],
         }).compile();
-        
+
         service = module.get<AttendanceService>(AttendanceService);
         sheetService = module.get(SheetService);
         configService = module.get(ConfigService);
@@ -50,52 +57,44 @@ describe('AttendanceService', () => {
                     return null;
             }
         });
-  });
-  afterEach(() => {
-    jest.clearAllMocks();
-});
-
-it('should be defined',() => {
-    expect(service).toBeDefined();
-});
-describe('getAttendance', () => {
-    it('should return empty array when no attendance records exist', async () => {
-        sheetService.getSheetValues.mockResolvedValue([]);
-        
-        const result = await service.getAttendance('user1');
-        
-        expect(result).toEqual([]);
-        expect(sheetService.getSheetValues).toHaveBeenCalledWith(
-            'test-sheet-id',
-            'Attendance!A:E'
-        );
     });
-    it('should return filtered attendance records for a specific user', async () => {
-        sheetService.getSheetValues.mockResolvedValue(mockAttendanceData);
-        
-        const result = await service.getAttendance('user1');
-        
-        // Should return 2 records (1 sign-in and 1 sign-out)
-        expect(result).toHaveLength(2);
-        // All records should belong to user1
-        expect(result.every(record => record.discordId === 'user1')).toBe(true);
-        // Should maintain the order of records
-        expect(result[0].isSigningIn).toBe(true);
-        expect(result[1].isSigningIn).toBe(false);
-});
 
-it('should return empty array when user has no attendance records', async () => {
-    // Mock data with only user2's records
-    const otherUserData = [
-        ['user2', 'YETI Robotics', 'Test User 2', '2025-01-01T10:00:00Z', 'true'],
-        ['user2', 'YETI Robotics', 'Test User 2', '2025-01-01T12:00:00Z', 'false'],
-    ];
-    sheetService.getSheetValues.mockResolvedValue(otherUserData);
-    
-    // Try to get attendance for user1, who has no records
-    const result = await service.getAttendance('user1');
-    
-    // Should return empty array since user1 has no records
-    expect(result).toEqual([]);
+    afterEach(() => {
+        jest.clearAllMocks();
+    });
+
+    it('should be defined', () => {
+        expect(service).toBeDefined();
+    });
+
+    describe('getAttendance', () => {
+        it('should return empty array when no attendance records exist', async () => {
+            sheetService.getSheetValues.mockResolvedValue([]);
+            const result = await service.getAttendance('user1');
+
+            expect(result).toEqual([]);
+            expect(sheetService.getSheetValues).toHaveBeenCalledWith(
+                'test-sheet-id',
+                'Attendance!A:E'
+            );
+        });
+
+        it('should return filtered attendance records for a specific user', async () => {
+            sheetService.getSheetValues.mockResolvedValue(mockAttendanceData);
+            const result = await service.getAttendance('user1');
+
+            expect(result).toHaveLength(2);
+            expect(result.every(record => record.discordId === 'user1')).toBe(true);
+            expect(result[0].isSigningIn).toBe(true);
+            expect(result[1].isSigningIn).toBe(false);
+        });
+
+    it('should handle when user has no attendance records', async () => {
+      sheetService.getSheetValues.mockResolvedValue(mockAttendanceData);
+
+      const result = await service.getAttendance('nonexistent-user');
+
+            expect(result).toEqual([]);
+        });
+    });
 });
-});});
