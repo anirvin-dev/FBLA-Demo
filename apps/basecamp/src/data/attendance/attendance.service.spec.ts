@@ -35,7 +35,18 @@ describe('AttendanceService', () => {
                 {
                     provide: ConfigService,
                     useValue: {
-                        get: jest.fn(),
+                        get: jest.fn().mockImplementation((key: string) => {
+                            switch (key) {
+                                case 'ATTENDANCE_SPREADSHEET_ID':
+                                    return 'test-sheet-id';
+                                case 'YETI_SERVER_ID':
+                                    return 'yeti-server-id';
+                                case 'DEV_GUILD_ID':
+                                    return 'dev-guild-id';
+                                default:
+                                    return null;
+                            }
+                        }),
                     },
                 },
             ],
@@ -44,19 +55,6 @@ describe('AttendanceService', () => {
         service = module.get<AttendanceService>(AttendanceService);
         sheetService = module.get(SheetService);
         configService = module.get(ConfigService);
-
-        configService.get.mockImplementation((key: string) => {
-            switch (key) {
-                case 'ATTENDANCE_SPREADSHEET_ID':
-                    return 'test-sheet-id';
-                case 'YETI_SERVER_ID':
-                    return 'yeti-server-id';
-                case 'DEV_GUILD_ID':
-                    return 'dev-guild-id';
-                default:
-                    return null;
-            }
-        });
     });
 
     afterEach(() => {
@@ -81,12 +79,20 @@ describe('AttendanceService', () => {
 
         it('should return filtered attendance records for a specific user', async () => {
             sheetService.getSheetValues.mockResolvedValue(mockAttendanceData);
+
             const result = await service.getAttendance('user1');
 
-            expect(result).toHaveLength(2);
+            // Expect 4 records (2 sign-ins and 2 sign-outs for user1)
+            expect(result).toHaveLength(4);
             expect(result.every(record => record.discordId === 'user1')).toBe(true);
+            // Verify the first record is a sign-in
             expect(result[0].isSigningIn).toBe(true);
+            // Verify the second record is a sign-out
             expect(result[1].isSigningIn).toBe(false);
+            // Verify the third record is a sign-in
+            expect(result[2].isSigningIn).toBe(true);
+            // Verify the fourth record is a sign-out
+            expect(result[3].isSigningIn).toBe(false);
         });
 
     it('should handle when user has no attendance records', async () => {
