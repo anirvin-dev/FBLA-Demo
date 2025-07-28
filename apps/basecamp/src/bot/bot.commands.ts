@@ -193,9 +193,11 @@ export class BotCommands {
       const hours = await this.attendanceService.getUserHours(
         interaction.user.id,
       );
-
-      const hoursString = Math.round(hours);
-      const hoursPercentage = Math.round((hours / TOTAL_HOURS) * 100);
+      //Floors hours to the nearest integer
+      const hoursString = Math.floor(hours);
+      //Calculates hoursPercentage without rounding anything
+      const hoursPercentage = ((hours / TOTAL_HOURS) * 100);
+      //Rounds hoursPercentage to 2 decimal places
       const hoursPercentageString = hoursPercentage.toFixed(2);
 
       if (hours >= LEADERSHIP_REQUIRED_HOURS) {
