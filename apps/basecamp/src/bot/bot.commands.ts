@@ -194,7 +194,7 @@ export class BotCommands {
         interaction.user.id,
       );
 
-      const hoursString = Math.round(hours);
+      const hoursString = Math.floor(hours);
       const hoursPercentage = ((hours / TOTAL_HOURS) * 100);
       const hoursPercentageString = hoursPercentage.toFixed(2);
 
