@@ -195,7 +195,7 @@ export class BotCommands {
       );
 
       const hoursString = Math.round(hours);
-      const hoursPercentage = Math.round((hours / TOTAL_HOURS) * 100);
+      const hoursPercentage = ((hours / TOTAL_HOURS) * 100);
       const hoursPercentageString = hoursPercentage.toFixed(2);
 
       if (hours >= LEADERSHIP_REQUIRED_HOURS) {
