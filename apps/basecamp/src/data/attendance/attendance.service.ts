@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { SheetService } from 'src/sheet/sheet.service';
+import { SheetService } from '../../sheet/sheet.service';
 import z from 'zod';
 
 const AttendanceSchema = z.object({
