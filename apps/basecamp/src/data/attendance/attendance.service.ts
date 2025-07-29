@@ -288,7 +288,8 @@ export class AttendanceService {
         date: string;
         isSigningIn:boolean;
       }
-      
+
+      const allAttendance: AttendanceRecord[] = [];
       return [];
     } catch (error) {
       this.logger.error(`Error getting attendance leaderboard: ${error}`);
