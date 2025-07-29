@@ -139,7 +139,7 @@ export class AttendanceService {
             discordName,
             guildId,
             'signOut',
-            new Date(currentDate.getTime() - 1000 * 60 * 60 * 1.5),
+            new Date(lastDate.getTime() + 1000 * 60 * 60 * 1.5),
           );
           const newSigninResult = await this.performAttendanceOperation(
             discordId,
@@ -151,13 +151,14 @@ export class AttendanceService {
           if (halfCreditResult && newSigninResult) {
             return {
               success: false,
-              message: 'You signed in last meeting but did not sign out. You will be credited for 1.5 hours of attendance for that meeting.\n Signed in successfully.',
-            }
+              message:
+                'You signed in last meeting but did not sign out. You will be credited for 1.5 hours of attendance for that meeting.\n Signed in successfully.',
+            };
           } else {
             return {
               success: false,
               message: 'Failed to sign in',
-            }
+            };
           }
         } catch (error) {
           this.logger.error(`Failed to sign in: ${error}`);
