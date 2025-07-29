@@ -270,4 +270,13 @@ export class AttendanceService {
 
     return hours;
   }
+
+  public async getTopMembersByHours(limit: number = 5): Promise<{ userName: string; totalHours: number }[]> {
+    try {
+      return [];
+    } catch (error) {
+      this.logger.error(`Error getting attendance leaderboard: ${error}`);
+      return [];
+    }
+  }
 }
