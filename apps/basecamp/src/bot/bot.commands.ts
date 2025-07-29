@@ -269,6 +269,50 @@ export class BotCommands {
   }
 
   @SlashCommand({
+    name: 'attendance-leaderboard',
+    description: 'Show the top 5 members by attendance hours',
+  })
+  public async onAttendanceLeaderboard(@Context() [interaction]: SlashCommandContext) {
+    const leaderboard = await this.attendanceService.getTopMembersByHours(5);
+
+    if (!leaderboard || leaderboard.length === 0) {
+      return interaction.reply('No attendance data found');
+    }
+
+    let leaderboardString = ':clock: **Attendance Leaderboard** :clock:\n\n';
+
+    leaderboard.forEach((entry, index) => {
+      const rank = index + 1;
+      let prefix = '';
+
+      // Medal emojis for top 3, numbers for 4th and 5th
+      switch (rank) {
+        case 1:
+          prefix = ':first_place_medal:';
+          break;
+        case 2:
+          prefix = ':second_place_medal:';
+          break;
+        case 3:
+          prefix = ':third_place_medal:';
+          break;
+        case 4:
+          prefix = '4.';
+          break;
+        case 5:
+          prefix = '5.';
+          break;
+      }
+
+      leaderboardString += `${prefix} **${entry.userName}** - ${entry.totalHours} hours\n`;
+    });
+
+    leaderboardString += '\n*Updated in real-time from attendance records*';
+
+    return interaction.reply(leaderboardString);
+  }
+
+  @SlashCommand({
     name: 'handbook',
     description: 'Ask the handbook a question',
   })
