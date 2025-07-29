@@ -293,7 +293,19 @@ export class AttendanceService {
 
       for (let i = 1; i < sheet.length; i++) {
         const row = sheet[i];
-      return [];
+
+
+      if (row.length >= 5) {  
+    allAttendance.push({
+      discordID: String(row[0]),
+      discordName: String(row[2]),
+      date: String(row[3]),
+      isSigningIn: row[4] === 'true' || row[4] === 'TRUE',
+    });
+  }
+}
+
+    
     } catch (error) {
       this.logger.error(`Error getting attendance leaderboard: ${error}`);
       return [];
