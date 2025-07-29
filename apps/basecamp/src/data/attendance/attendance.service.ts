@@ -279,58 +279,87 @@ export class AttendanceService {
       );
 
       if (!sheet || sheet.length <= 1) {
+        this.logger.warn('No attendance data found');
         return [];
       }
 
-      type AttendanceRecord = {
+      interface AttendanceRecord {
         discordID: string;
         discordName: string;
         date: string;
-        isSigningIn:boolean;
+        isSigningIn: boolean;
       }
 
       const allAttendance: AttendanceRecord[] = [];
 
+      // Process sheet data into attendance records
       for (let i = 1; i < sheet.length; i++) {
         const row = sheet[i];
+        if (row && row.length >= 5) {  
+          allAttendance.push({
+            discordID: String(row[0]),
+            discordName: String(row[2]),
+            date: String(row[3]),
+            isSigningIn: row[4] === 'true' || row[4] === 'TRUE',
+          });
+        }
+      }
 
+      // Group attendance by user and session
+      const userSessions = new Map<string, {
+        userName: string;
+        sessions: Array<{ signIn?: Date; signOut?: Date }>;
+      }>();
 
-      if (row.length >= 5) {  
-    allAttendance.push({
-      discordID: String(row[0]),
-      discordName: String(row[2]),
-      date: String(row[3]),
-      isSigningIn: row[4] === 'true' || row[4] === 'TRUE',
-    });
-  }
-}
+      // Process attendance records into user sessions
+      for (const record of allAttendance) {
+        if (!userSessions.has(record.discordID)) {
+          userSessions.set(record.discordID, {
+            userName: record.discordName,
+            sessions: [{}]
+          });
+        }
+        
+        const user = userSessions.get(record.discordID)!;
+        const currentSession = user.sessions[user.sessions.length - 1];
 
-const userSessions = new Map<string, {
-  userName: string;
-  sessions: Array<{ signIn?: Date; signOut?: Date }>;
-}>();
+        if (record.isSigningIn) {
+          if (currentSession.signIn) {
+            // If there's already a sign-in, start a new session
+            user.sessions.push({ signIn: new Date(record.date) });
+          } else {
+            currentSession.signIn = new Date(record.date);
+          }
+        } else {
+          currentSession.signOut = new Date(record.date);
+          // Prepare for next session
+          user.sessions.push({});
+        }
+      }
 
-for (const record of allAttendance) {
-  if (!userSessions.has(record.discordID)) {
-    userSessions.set(record.discordID, {
-      userName: record.discordName,
-      sessions: [{}]
-    });
-  }
-  
-  const user = userSessions.get(record.discordID)!;
-  const currentSession = user.sessions[user.sessions.length - 1];
+      // Calculate total hours for each user
+      const userHours: { userName: string; totalHours: number }[] = [];
+      
+      for (const [_, userData] of userSessions) {
+        let totalMs = 0;
+        
+        for (const session of userData.sessions) {
+          if (session.signIn && session.signOut) {
+            totalMs += session.signOut.getTime() - session.signIn.getTime();
+          }
+        }
+        
+        userHours.push({
+          userName: userData.userName,
+          totalHours: parseFloat((totalMs / (1000 * 60 * 60)).toFixed(2)) // Convert ms to hours
+        });
+      }
 
-  if (record.isSigningIn) {
-    if (currentSession.signIn) {
-      user.sessions.push({ signIn: new Date(record.date) });
-    } else {
-      currentSession.signIn = new Date(record.date);
-    }
-  } else {
-    currentSession.signOut = new Date(record.date);
-
-
+      // Sort by hours in descending order and return top N
+      return userHours
+        .sort((a, b) => b.totalHours - a.totalHours)
+        .slice(0, limit);
+        
     } catch (error) {
       this.logger.error(`Error getting attendance leaderboard: ${error}`);
       return [];
