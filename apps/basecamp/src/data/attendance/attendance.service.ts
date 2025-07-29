@@ -290,6 +290,9 @@ export class AttendanceService {
       }
 
       const allAttendance: AttendanceRecord[] = [];
+
+      for (let i = 1; i < sheet.length; i++) {
+        const row = sheet[i];
       return [];
     } catch (error) {
       this.logger.error(`Error getting attendance leaderboard: ${error}`);
