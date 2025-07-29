@@ -273,6 +273,14 @@ export class AttendanceService {
 
   public async getTopMembersByHours(limit: number = 5): Promise<{ userName: string; totalHours: number }[]> {
     try {
+      const sheet = await this.sheetService.getSheetValues(
+        this.attendanceSheetId,
+        'Attendance!A:E',
+      );
+
+      if (!sheet || sheet.length <= 1) {
+        return [];
+      }
       return [];
     } catch (error) {
       this.logger.error(`Error getting attendance leaderboard: ${error}`);
