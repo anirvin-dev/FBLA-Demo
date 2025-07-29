@@ -305,7 +305,13 @@ export class AttendanceService {
   }
 }
 
-    
+const userSessions = new Map<string, {
+  userName: string;
+  sessions: Array<{ signIn?: Date; signOut?: Date }>;
+}>();
+
+
+
     } catch (error) {
       this.logger.error(`Error getting attendance leaderboard: ${error}`);
       return [];
