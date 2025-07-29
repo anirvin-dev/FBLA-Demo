@@ -318,8 +318,17 @@ for (const record of allAttendance) {
     });
   }
   
-  const user = userSessions.get(record.discordId)!;
+  const user = userSessions.get(record.discordID)!;
   const currentSession = user.sessions[user.sessions.length - 1];
+
+  if (record.isSigningIn) {
+    if (currentSession.signIn) {
+      user.sessions.push({ signIn: new Date(record.date) });
+    } else {
+      currentSession.signIn = new Date(record.date);
+    }
+  } else {
+    currentSession.signOut = new Date(record.date);
 
 
     } catch (error) {
