@@ -276,32 +276,29 @@ export class AttendanceService {
         return [];
       }
 
-      const userData = new Map<string, { name: string }>();
+      // Group by user and sum hours
+      const userHoursMap = new Map<string, { userName: string; totalHours: number }>();
+      
+      // Process all attendance records
       for (let i = 1; i < allAttendance.length; i++) {
         const row = allAttendance[i];
         if (row?.length >= 5) {
           const discordId = String(row[0]);
           const discordName = String(row[2]);
-          if (!userData.has(discordId)) {
-            userData.set(discordId, { name: discordName });
+          const hours = await this.getUserHours(discordId);
+          
+          if (hours > 0) {
+            const existing = userHoursMap.get(discordId) || { userName: discordName, totalHours: 0 };
+            userHoursMap.set(discordId, {
+              userName: discordName,
+              totalHours: existing.totalHours + hours
+            });
           }
         }
       }
 
-      const userHours = await Promise.all(
-        Array.from(userData.entries()).map(async ([discordId, { name }]) => {
-          try {
-            const hours = await this.getUserHours(discordId);
-            return { userName: name, totalHours: parseFloat(hours.toFixed(2)) };
-          } catch (error) {
-            this.logger.error(`Error calculating hours for user ${discordId}: ${error}`);
-            return null;
-          }
-        })
-      );
-
-      return userHours
-        .filter((user): user is { userName: string; totalHours: number } => user !== null && user.totalHours > 0)
+      // Convert to array, sort by total hours (descending), and apply limit
+      return Array.from(userHoursMap.values())
         .sort((a, b) => b.totalHours - a.totalHours)
         .slice(0, limit);
         
