@@ -281,6 +281,14 @@ export class AttendanceService {
       if (!sheet || sheet.length <= 1) {
         return [];
       }
+
+      type AttendanceRecord = {
+        discordID: string;
+        discordName: string;
+        date: string;
+        isSigningIn:boolean;
+      }
+      
       return [];
     } catch (error) {
       this.logger.error(`Error getting attendance leaderboard: ${error}`);
