@@ -242,13 +242,6 @@ export class AttendanceService {
     }
   }
 
-  /**
-   * Get the total hours worked by a user
-   * @param discordId The Discord ID of the user
-   *
-   * @throws Error if the attendance record is invalid
-   * @returns The total hours worked by the user
-   */
   public async getUserHours(discordId: string): Promise<number> {
     const attendance = await this.getAttendance(discordId);
 
@@ -283,80 +276,33 @@ export class AttendanceService {
         return [];
       }
 
-      interface AttendanceRecord {
-        discordID: string;
-        discordName: string;
-        date: string;
-        isSigningIn: boolean;
-      }
-
-      const allAttendance: AttendanceRecord[] = [];
-
-      // Process sheet data into attendance records
+      const users = new Map<string, string>();
+      
       for (let i = 1; i < sheet.length; i++) {
         const row = sheet[i];
-        if (row && row.length >= 5) {  
-          allAttendance.push({
-            discordID: String(row[0]),
-            discordName: String(row[2]),
-            date: String(row[3]),
-            isSigningIn: row[4] === 'true' || row[4] === 'TRUE',
-          });
-        }
-      }
-
-      // Group attendance by user and session
-      const userSessions = new Map<string, {
-        userName: string;
-        sessions: Array<{ signIn?: Date; signOut?: Date }>;
-      }>();
-
-      // Process attendance records into user sessions
-      for (const record of allAttendance) {
-        if (!userSessions.has(record.discordID)) {
-          userSessions.set(record.discordID, {
-            userName: record.discordName,
-            sessions: [{}]
-          });
-        }
-        
-        const user = userSessions.get(record.discordID)!;
-        const currentSession = user.sessions[user.sessions.length - 1];
-
-        if (record.isSigningIn) {
-          if (currentSession.signIn) {
-            // If there's already a sign-in, start a new session
-            user.sessions.push({ signIn: new Date(record.date) });
-          } else {
-            currentSession.signIn = new Date(record.date);
-          }
-        } else {
-          currentSession.signOut = new Date(record.date);
-          // Prepare for next session
-          user.sessions.push({});
-        }
-      }
-
-      // Calculate total hours for each user
-      const userHours: { userName: string; totalHours: number }[] = [];
-      
-      for (const [_, userData] of userSessions) {
-        let totalMs = 0;
-        
-        for (const session of userData.sessions) {
-          if (session.signIn && session.signOut) {
-            totalMs += session.signOut.getTime() - session.signIn.getTime();
+        if (row && row.length >= 5) {
+          const discordId = String(row[0]);
+          const discordName = String(row[2]);
+          if (!users.has(discordId)) {
+            users.set(discordId, discordName);
           }
         }
-        
-        userHours.push({
-          userName: userData.userName,
-          totalHours: parseFloat((totalMs / (1000 * 60 * 60)).toFixed(2)) // Convert ms to hours
-        });
       }
 
-      // Sort by hours in descending order and return top N
+      const userHours = await Promise.all(
+        Array.from(users.entries()).map(async ([discordId, userName]) => {
+          try {
+            const hours = await this.getUserHours(discordId);
+            return { userName, totalHours: parseFloat(hours.toFixed(2)) };
+          } catch (error) {
+            this.logger.error(`Error calculating hours for user ${discordId}: ${error}`);
+            return { userName, totalHours: 0 };
+          }
+        })
+      );
+
       return userHours
+        .filter(user => user.totalHours > 0)
         .sort((a, b) => b.totalHours - a.totalHours)
         .slice(0, limit);
         
