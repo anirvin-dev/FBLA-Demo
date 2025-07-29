@@ -310,6 +310,16 @@ const userSessions = new Map<string, {
   sessions: Array<{ signIn?: Date; signOut?: Date }>;
 }>();
 
+for (const record of allAttendance) {
+  if (!userSessions.has(record.discordID)) {
+    userSessions.set(record.discordID, {
+      userName: record.discordName,
+      sessions: [{}]
+    });
+  }
+  
+  const user = userSessions.get(record.discordId)!;
+  const currentSession = user.sessions[user.sessions.length - 1];
 
 
     } catch (error) {
