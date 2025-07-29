@@ -225,10 +225,10 @@ export class BotCommands {
   }
 
   @SlashCommand({
-    name: 'leaderboard',
+    name: 'outreach-leaderboard',
     description: 'Show the top 5 members by outreach hours',
   })
-  public async onLeaderboard(@Context() [interaction]: SlashCommandContext) {
+  public async onOutreachLeaderboard(@Context() [interaction]: SlashCommandContext) {
     const leaderboard = await this.outreachService.getTopMembersByHours(5);
 
     if (!leaderboard || leaderboard.length === 0) {
