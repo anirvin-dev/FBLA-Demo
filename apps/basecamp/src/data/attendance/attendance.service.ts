@@ -266,31 +266,30 @@ export class AttendanceService {
 
   public async getTopMembersByHours(limit: number = 5): Promise<{ userName: string; totalHours: number }[]> {
     try {
-      const sheet = await this.sheetService.getSheetValues(
+      const allAttendance = await this.sheetService.getSheetValues(
         this.attendanceSheetId,
         'Attendance!A:E',
       );
 
-      if (!sheet || sheet.length <= 1) {
+      if (!allAttendance || allAttendance.length <= 1) {
         this.logger.warn('No attendance data found');
         return [];
       }
 
-      const users = new Map<string, string>();
-      
-      for (let i = 1; i < sheet.length; i++) {
-        const row = sheet[i];
-        if (row && row.length >= 5) {
+      const userNames = new Map<string, string>();
+      for (let i = 1; i < allAttendance.length; i++) {
+        const row = allAttendance[i];
+        if (row?.length >= 5) {
           const discordId = String(row[0]);
           const discordName = String(row[2]);
-          if (!users.has(discordId)) {
-            users.set(discordId, discordName);
+          if (!userNames.has(discordId)) {
+            userNames.set(discordId, discordName);
           }
         }
       }
 
       const userHours = await Promise.all(
-        Array.from(users.entries()).map(async ([discordId, userName]) => {
+        Array.from(userNames.entries()).map(async ([discordId, userName]) => {
           try {
             const hours = await this.getUserHours(discordId);
             return { userName, totalHours: parseFloat(hours.toFixed(2)) };
