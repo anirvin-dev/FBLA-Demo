@@ -93,4 +93,8 @@ describe('AttendanceService', () => {
             expect(result).toEqual([]);
         });
     });
+
+    describe('getUserHours', () => {
+        
+    });
 });
