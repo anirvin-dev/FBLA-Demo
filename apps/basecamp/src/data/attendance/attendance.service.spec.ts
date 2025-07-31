@@ -95,6 +95,15 @@ describe('AttendanceService', () => {
     });
 
     describe('getUserHours', () => {
-        
+        it('should calculate hours correctly for a user with attendance records', async () => {
+            const mockUserAttendance = [
+                ['user1', 'YETI Robotics', 'Test User 1', '2025-01-01T10:00:00Z', 'true'],
+                ['user1', 'YETI Robotics', 'Test User 1', '2025-01-01T12:30:00Z', 'false']
+            ];
+            sheetService.getSheetValues.mockResolvedValue(mockUserAttendance);
+
+            const result = await service.getUserHours('user1');
+            expect(result).toBeCloseTo(2.5);
+        });
     });
 });
