@@ -105,5 +105,11 @@ describe('AttendanceService', () => {
             const result = await service.getUserHours('user1');
             expect(result).toBeCloseTo(2.5);
         });
+
+        it('should return 0 for a user with no attendance records', async () => {
+            sheetService.getSheetValues.mockResolvedValue([]);
+            const result = await service.getUserHours('nonexistent-user');
+            expect(result).toBe(0);
+        });
     });
 });
