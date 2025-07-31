@@ -152,7 +152,7 @@ export class AttendanceService {
             return {
               success: false,
               message:
-                'You signed in last meeting but did not sign out. You will be credited for 1.5 hours of attendance for that meeting. You are now signed in',
+                'You signed in last meeting but did not sign out. You will be credited for 1.5 hours of attendance for that meeting. You are now signed in.',
             };
           } else {
             return {
