@@ -114,4 +114,13 @@ describe('AttendanceService', () => {
     });
 
     describe('getTopMembersByHours', () => {
+        const mockAllAttendance = [
+            ['discordId', 'team', 'discordName', 'date', 'isSigningIn'], // Header row
+            ['user1', 'YETI Robotics', 'Test User 1', '2025-01-01T10:00:00Z', 'true'],
+            ['user1', 'YETI Robotics', 'Test User 1', '2025-01-01T12:00:00Z', 'false'], // 2 hours
+            ['user2', 'YETI Robotics', 'Test User 2', '2025-01-01T10:00:00Z', 'true'],
+            ['user2', 'YETI Robotics', 'Test User 2', '2025-01-01T13:00:00Z', 'false'], // 3 hours
+            ['user3', 'YETI Robotics', 'Test User 3', '2025-01-01T10:00:00Z', 'true'],
+            ['user3', 'YETI Robotics', 'Test User 3', '2025-01-01T15:00:00Z', 'false'], // 5 hours
+        ];
 });
