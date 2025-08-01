@@ -126,11 +126,10 @@ describe('AttendanceService', () => {
             expect(result).toEqual([]);
         });
 
-        it('should handle API errors and throw with a user-friendly message', async () => {
+        it('should handle API errors by returning an empty array', async () => {
             mockGetSheetValues.mockRejectedValue(new Error('API Error'));
-            await expect(service.getTopMembersByHours(5))
-                .rejects
-                .toThrow('Failed to retrieve attendance leaderboard. Please try again later.');
+            const result = await service.getTopMembersByHours(5);
+            expect(result).toEqual([]);
         });
 
         const mockAllAttendance = [

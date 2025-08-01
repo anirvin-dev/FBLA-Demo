@@ -338,7 +338,7 @@ export class AttendanceService {
         
     } catch (error) {
       this.logger.error(`Error getting attendance leaderboard:`, error);
-      throw new Error('Failed to retrieve attendance leaderboard. Please try again later.');
+      return [];
     }
   }
 }
