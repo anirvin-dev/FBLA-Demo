@@ -157,6 +157,15 @@ describe('AttendanceService', () => {
             expect(result[2].totalHours).toBe(2);
         });
 
+        it('should return empty array when no attendance data exists', async () => {
+            sheetService.getSheetValues.mockResolvedValue([
+                ['discordId', 'team', 'discordName', 'date', 'isSigningIn']
+            ]);
+
+            const result = await service.getTopMembersByHours(5);
+            expect(result).toEqual([]);
+        });
+
 
 });
 });
