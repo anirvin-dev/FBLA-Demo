@@ -167,6 +167,7 @@ describe('AttendanceService', () => {
         });
 
         it('should handle errors gracefully and return empty array', async () => {
+            jest.clearAllMocks();
             sheetService.getSheetValues.mockRejectedValue(new Error('API Error'));
 
             const result = await service.getTopMembersByHours(5);
@@ -195,7 +196,7 @@ describe('AttendanceService', () => {
         ];
     
         sheetService.getSheetValues.mockResolvedValue(tiedData);
-        jest.spyOn(service, 'getUserHours').mockImplementation(async (discordId) => {
+        jest.spyOn(service, 'getUserHours').mockImplementation(async () => {
             return 2;
         });
     
