@@ -166,6 +166,13 @@ describe('AttendanceService', () => {
             expect(result).toEqual([]);
         });
 
+        it('should handle errors gracefully and return empty array', async () => {
+            sheetService.getSheetValues.mockRejectedValue(new Error('API Error'));
 
-});
+            const result = await service.getTopMembersByHours(5);
+            expect(result).toEqual([]);
+        });
+    });
+
+
 });
