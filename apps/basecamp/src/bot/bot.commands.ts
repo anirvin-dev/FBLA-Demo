@@ -196,7 +196,7 @@ export class BotCommands {
       //Floors hours to the nearest integer
       const hoursString = Math.floor(hours);
       //Calculates hoursPercentage without rounding anything
-      const hoursPercentage = ((hours / TOTAL_HOURS) * 100);
+      const hoursPercentage = (hours / TOTAL_HOURS) * 100;
       //Rounds hoursPercentage to 2 decimal places
       const hoursPercentageString = hoursPercentage.toFixed(2);
 
@@ -228,7 +228,9 @@ export class BotCommands {
     name: 'outreach-leaderboard',
     description: 'Show the top 5 members by outreach hours',
   })
-  public async onOutreachLeaderboard(@Context() [interaction]: SlashCommandContext) {
+  public async onOutreachLeaderboard(
+    @Context() [interaction]: SlashCommandContext,
+  ) {
     const leaderboard = await this.outreachService.getTopMembersByHours(5);
 
     if (!leaderboard || leaderboard.length === 0) {
@@ -272,7 +274,9 @@ export class BotCommands {
     name: 'attendance-leaderboard',
     description: 'Show the top 5 members by attendance hours',
   })
-  public async onAttendanceLeaderboard(@Context() [interaction]: SlashCommandContext) {
+  public async onAttendanceLeaderboard(
+    @Context() [interaction]: SlashCommandContext,
+  ) {
     const leaderboard = await this.attendanceService.getTopMembersByHours(5);
 
     if (!leaderboard || leaderboard.length === 0) {

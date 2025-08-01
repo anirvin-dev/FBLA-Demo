@@ -89,11 +89,16 @@ describe('OutreachService', () => {
     let mockGetSheetValues: jest.Mock;
 
     beforeEach(() => {
-      mockGetSheetValues = sheetService.getSheetValues as jest.Mock;
+      mockGetSheetValues = jest.fn();
+      (sheetService.getSheetValues as jest.MockedFunction<
+        typeof sheetService.getSheetValues
+      >) = mockGetSheetValues;
     });
 
     it('should return empty array when no outreach data', async () => {
-      mockGetSheetValues.mockResolvedValue([['Date', 'Name', 'Event', 'Type', 'Hours']]);
+      mockGetSheetValues.mockResolvedValue([
+        ['Date', 'Name', 'Event', 'Type', 'Hours'],
+      ]);
       const result = await service.getTopMembersByHours(5);
       expect(result).toEqual([]);
     });

@@ -265,7 +265,9 @@ export class AttendanceService {
     return hours;
   }
 
-  public async getTopMembersByHours(limit: number = 5): Promise<{ userName: string; totalHours: number }[]> {
+  public async getTopMembersByHours(
+    limit: number = 5,
+  ): Promise<{ userName: string; totalHours: number }[]> {
     try {
       // First, get all attendance records in a single API call
       const allAttendance = await this.sheetService.getSheetValues(
@@ -279,10 +281,13 @@ export class AttendanceService {
       }
 
       // Create a map to store user data
-      const userSessions = new Map<string, {
-        userName: string;
-        sessions: Array<{ signIn: Date | null; signOut: Date | null }>;
-      }>();
+      const userSessions = new Map<
+        string,
+        {
+          userName: string;
+          sessions: Array<{ signIn: Date | null; signOut: Date | null }>;
+        }
+      >();
 
       // First pass: Group all attendance records by user and sort them by date
       for (let i = 1; i < allAttendance.length; i++) {
@@ -311,31 +316,36 @@ export class AttendanceService {
       }
 
       // Calculate total hours for each user
-      const userHours = Array.from(userSessions.entries()).map(([discordId, { userName, sessions }]) => {
-        let totalHours = 0;
-        
-        for (const session of sessions) {
-          if (session.signIn && session.signOut) {
-            const hours = (session.signOut.getTime() - session.signIn.getTime()) / (1000 * 60 * 60);
-            totalHours += hours > 0 ? hours : 0; // Only count positive time spans
-          } else if (session.signIn) {
-            // Handle case where user is still signed in (no sign-out record)
-            // Optionally, you might want to handle this differently
-            const hours = (new Date().getTime() - session.signIn.getTime()) / (1000 * 60 * 60);
-            totalHours += hours > 0 ? hours : 0;
-          }
-        }
+      const userHours = Array.from(userSessions.entries()).map(
+        ([discordId, { userName, sessions }]) => {
+          let totalHours = 0;
 
-        return { discordId, userName, totalHours };
-      });
+          for (const session of sessions) {
+            if (session.signIn && session.signOut) {
+              const hours =
+                (session.signOut.getTime() - session.signIn.getTime()) /
+                (1000 * 60 * 60);
+              totalHours += hours > 0 ? hours : 0; // Only count positive time spans
+            } else if (session.signIn) {
+              // Handle case where user is still signed in (no sign-out record)
+              // Optionally, you might want to handle this differently
+              const hours =
+                (new Date().getTime() - session.signIn.getTime()) /
+                (1000 * 60 * 60);
+              totalHours += hours > 0 ? hours : 0;
+            }
+          }
+
+          return { discordId, userName, totalHours };
+        },
+      );
 
       // Sort by total hours (descending) and apply limit
       return userHours
-        .filter(user => user.totalHours > 0)
+        .filter((user) => user.totalHours > 0)
         .sort((a, b) => b.totalHours - a.totalHours)
         .slice(0, limit)
         .map(({ userName, totalHours }) => ({ userName, totalHours }));
-        
     } catch (error) {
       this.logger.error(`Error getting attendance leaderboard:`, error);
       return [];
