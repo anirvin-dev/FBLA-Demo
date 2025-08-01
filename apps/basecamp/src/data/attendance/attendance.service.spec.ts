@@ -172,6 +172,63 @@ describe('AttendanceService', () => {
             const result = await service.getTopMembersByHours(5);
             expect(result).toEqual([]);
         });
+
+        it('should return default limit of 5 when no limit is specified', async () => {
+            sheetService.getSheetValues.mockResolvedValue(mockAllAttendance);
+        
+            const result = await service.getTopMembersByHours();
+        
+            expect(result).toHaveLength(3); // Only 3 users in test data
+            expect(result[0].totalHours).toBe(5);
+            expect(result[1].totalHours).toBe(3);
+            expect(result[2].totalHours).toBe(2);
+        });
+    });
+    
+    it('should handle users with same total hours correctly', async () => {
+        const tiedData = [
+            ['discordId', 'team', 'discordName', 'date', 'isSigningIn'],
+            ['user1', 'YETI', 'User A', '2025-01-01T10:00:00Z', 'true'],
+            ['user1', 'YETI', 'User A', '2025-01-01T12:00:00Z', 'false'], // 2 hours
+            ['user2', 'YETI', 'User B', '2025-01-01T10:00:00Z', 'true'],
+            ['user2', 'YETI', 'User B', '2025-01-01T12:00:00Z', 'false'], // 2 hours
+        ];
+    
+        sheetService.getSheetValues.mockResolvedValue(tiedData);
+        jest.spyOn(service, 'getUserHours').mockImplementation(async (discordId) => {
+            return 2; // Both users have 2 hours
+        });
+    
+        const result = await service.getTopMembersByHours(2);
+    
+        expect(result).toHaveLength(2);
+        expect(result[0].totalHours).toBe(2);
+        expect(result[1].totalHours).toBe(2);
+    });
+    
+    it('should handle null sheet data', async () => {
+        sheetService.getSheetValues.mockResolvedValue(null);
+    
+        const result = await service.getTopMembersByHours(5);
+        expect(result).toEqual([]);
+    });
+    
+    it('should correctly sum hours for users with multiple attendance sessions', async () => {
+        const multipleSessions = [
+            ['discordId', 'team', 'discordName', 'date', 'isSigningIn'],
+            ['user1', 'YETI', 'Test User', '2025-01-01T10:00:00Z', 'true'],
+            ['user1', 'YETI', 'Test User', '2025-01-01T12:00:00Z', 'false'], // 2 hours
+            ['user1', 'YETI', 'Test User', '2025-01-02T10:00:00Z', 'true'],
+            ['user1', 'YETI', 'Test User', '2025-01-02T14:00:00Z', 'false'], // 4 hours
+        ];
+    
+        sheetService.getSheetValues.mockResolvedValue(multipleSessions);
+        jest.spyOn(service, 'getUserHours').mockResolvedValue(6); // 2 + 4 hours
+    
+        const result = await service.getTopMembersByHours(5);
+    
+        expect(result).toHaveLength(1);
+        expect(result[0].totalHours).toBe(6);
     });
 
 
