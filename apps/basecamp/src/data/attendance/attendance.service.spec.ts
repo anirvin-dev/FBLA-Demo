@@ -135,5 +135,15 @@ describe('AttendanceService', () => {
                     return hoursMap[discordId] || 0;
                 });
         });
+
+        it('should return top members sorted by hours in descending order', async () => {
+            sheetService.getSheetValues.mockResolvedValue(mockAllAttendance);
+
+            const result = await service.getTopMembersByHours(2); // Get top 2
+
+            expect(result).toHaveLength(2);
+            expect(result[0]).toEqual({ userName: 'Test User 3', totalHours: 5 });
+            expect(result[1]).toEqual({ userName: 'Test User 2', totalHours: 3 });
+        });
 });
 });
