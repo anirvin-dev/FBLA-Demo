@@ -123,4 +123,16 @@ describe('AttendanceService', () => {
             ['user3', 'YETI Robotics', 'Test User 3', '2025-01-01T10:00:00Z', 'true'],
             ['user3', 'YETI Robotics', 'Test User 3', '2025-01-01T15:00:00Z', 'false'], // 5 hours
         ];
+
+        beforeEach(() => {
+            jest.spyOn(service, 'getUserHours')
+                .mockImplementation(async (discordId) => {
+                    const hoursMap: Record<string, number> = {
+                        'user1': 2,
+                        'user2': 3,
+                        'user3': 5
+                    };
+                    return hoursMap[discordId] || 0;
+                });
+        });
 });
