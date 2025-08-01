@@ -145,5 +145,7 @@ describe('AttendanceService', () => {
             expect(result[0]).toEqual({ userName: 'Test User 3', totalHours: 5 });
             expect(result[1]).toEqual({ userName: 'Test User 2', totalHours: 3 });
         });
+
+        
 });
 });
