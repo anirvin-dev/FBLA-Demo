@@ -114,6 +114,25 @@ describe('AttendanceService', () => {
     });
 
     describe('getTopMembersByHours', () => {
+        let mockGetSheetValues: jest.Mock;
+
+        beforeEach(() => {
+            mockGetSheetValues = sheetService.getSheetValues as jest.Mock;
+        });
+
+        it('should return empty array when no attendance data', async () => {
+            mockGetSheetValues.mockResolvedValue([['discordId', 'team', 'discordName', 'date', 'isSigningIn']]);
+            const result = await service.getTopMembersByHours(5);
+            expect(result).toEqual([]);
+        });
+
+        it('should handle API errors and throw with a user-friendly message', async () => {
+            mockGetSheetValues.mockRejectedValue(new Error('API Error'));
+            await expect(service.getTopMembersByHours(5))
+                .rejects
+                .toThrow('Failed to retrieve attendance leaderboard. Please try again later.');
+        });
+
         const mockAllAttendance = [
             ['discordId', 'team', 'discordName', 'date', 'isSigningIn'], 
             ['user1', 'YETI Robotics', 'Test User 1', '2025-01-01T10:00:00Z', 'true'],
