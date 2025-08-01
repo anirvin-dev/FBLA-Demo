@@ -146,6 +146,17 @@ describe('AttendanceService', () => {
             expect(result[1]).toEqual({ userName: 'Test User 2', totalHours: 3 });
         });
 
-        
+        it('should return all members when limit is greater than number of users', async () => {
+            sheetService.getSheetValues.mockResolvedValue(mockAllAttendance);
+
+            const result = await service.getTopMembersByHours(10);
+
+            expect(result).toHaveLength(3); 
+            expect(result[0].totalHours).toBe(5);
+            expect(result[1].totalHours).toBe(3);
+            expect(result[2].totalHours).toBe(2);
+        });
+
+
 });
 });
