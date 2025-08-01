@@ -115,13 +115,13 @@ describe('AttendanceService', () => {
 
     describe('getTopMembersByHours', () => {
         const mockAllAttendance = [
-            ['discordId', 'team', 'discordName', 'date', 'isSigningIn'], // Header row
+            ['discordId', 'team', 'discordName', 'date', 'isSigningIn'], 
             ['user1', 'YETI Robotics', 'Test User 1', '2025-01-01T10:00:00Z', 'true'],
-            ['user1', 'YETI Robotics', 'Test User 1', '2025-01-01T12:00:00Z', 'false'], // 2 hours
+            ['user1', 'YETI Robotics', 'Test User 1', '2025-01-01T12:00:00Z', 'false'], 
             ['user2', 'YETI Robotics', 'Test User 2', '2025-01-01T10:00:00Z', 'true'],
-            ['user2', 'YETI Robotics', 'Test User 2', '2025-01-01T13:00:00Z', 'false'], // 3 hours
+            ['user2', 'YETI Robotics', 'Test User 2', '2025-01-01T13:00:00Z', 'false'], 
             ['user3', 'YETI Robotics', 'Test User 3', '2025-01-01T10:00:00Z', 'true'],
-            ['user3', 'YETI Robotics', 'Test User 3', '2025-01-01T15:00:00Z', 'false'], // 5 hours
+            ['user3', 'YETI Robotics', 'Test User 3', '2025-01-01T15:00:00Z', 'false'], 
         ];
 
         beforeEach(() => {
@@ -178,7 +178,7 @@ describe('AttendanceService', () => {
         
             const result = await service.getTopMembersByHours();
         
-            expect(result).toHaveLength(3); // Only 3 users in test data
+            expect(result).toHaveLength(3);
             expect(result[0].totalHours).toBe(5);
             expect(result[1].totalHours).toBe(3);
             expect(result[2].totalHours).toBe(2);
@@ -189,14 +189,14 @@ describe('AttendanceService', () => {
         const tiedData = [
             ['discordId', 'team', 'discordName', 'date', 'isSigningIn'],
             ['user1', 'YETI', 'User A', '2025-01-01T10:00:00Z', 'true'],
-            ['user1', 'YETI', 'User A', '2025-01-01T12:00:00Z', 'false'], // 2 hours
+            ['user1', 'YETI', 'User A', '2025-01-01T12:00:00Z', 'false'],
             ['user2', 'YETI', 'User B', '2025-01-01T10:00:00Z', 'true'],
-            ['user2', 'YETI', 'User B', '2025-01-01T12:00:00Z', 'false'], // 2 hours
+            ['user2', 'YETI', 'User B', '2025-01-01T12:00:00Z', 'false'],
         ];
     
         sheetService.getSheetValues.mockResolvedValue(tiedData);
         jest.spyOn(service, 'getUserHours').mockImplementation(async (discordId) => {
-            return 2; // Both users have 2 hours
+            return 2;
         });
     
         const result = await service.getTopMembersByHours(2);
@@ -217,13 +217,13 @@ describe('AttendanceService', () => {
         const multipleSessions = [
             ['discordId', 'team', 'discordName', 'date', 'isSigningIn'],
             ['user1', 'YETI', 'Test User', '2025-01-01T10:00:00Z', 'true'],
-            ['user1', 'YETI', 'Test User', '2025-01-01T12:00:00Z', 'false'], // 2 hours
+            ['user1', 'YETI', 'Test User', '2025-01-01T12:00:00Z', 'false'], 
             ['user1', 'YETI', 'Test User', '2025-01-02T10:00:00Z', 'true'],
-            ['user1', 'YETI', 'Test User', '2025-01-02T14:00:00Z', 'false'], // 4 hours
+            ['user1', 'YETI', 'Test User', '2025-01-02T14:00:00Z', 'false'], 
         ];
     
         sheetService.getSheetValues.mockResolvedValue(multipleSessions);
-        jest.spyOn(service, 'getUserHours').mockResolvedValue(6); // 2 + 4 hours
+        jest.spyOn(service, 'getUserHours').mockResolvedValue(6); 
     
         const result = await service.getTopMembersByHours(5);
     
