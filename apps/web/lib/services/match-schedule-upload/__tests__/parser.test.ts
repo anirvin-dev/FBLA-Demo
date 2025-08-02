@@ -73,6 +73,7 @@ describe("parser", () => {
 		);
 
 		await expect(async () => {
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			for await (const _ of parseCsv(csvBuffer)) {
 				// This should not be reached
 			}
@@ -85,6 +86,7 @@ describe("parser", () => {
 		);
 
 		await expect(async () => {
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			for await (const _ of parseCsv(csvBuffer)) {
 				// This should not be reached
 			}
@@ -191,6 +193,7 @@ describe("parser", () => {
 		);
 
 		await expect(async () => {
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			for await (const _ of parseCsv(csvBuffer)) {
 				// This should not be reached
 			}

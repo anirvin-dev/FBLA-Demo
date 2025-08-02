@@ -255,7 +255,7 @@ describe("uploadMatchSchedule", () => {
 
 		await expect(
 			uploadMatchSchedule({
-				csvBuffer: null as any,
+				csvBuffer: null as unknown as Buffer,
 				eventCode,
 			})
 		).rejects.toThrow(ValidationError);
@@ -270,7 +270,7 @@ describe("uploadMatchSchedule", () => {
 
 		await expect(
 			uploadMatchSchedule({
-				csvBuffer: undefined as any,
+				csvBuffer: undefined as unknown as Buffer,
 				eventCode,
 			})
 		).rejects.toThrow(ValidationError);

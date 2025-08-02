@@ -25,6 +25,36 @@ jest.mock("@/lib/database/schema", () => ({
 
 const mockDb = db as jest.Mocked<typeof db>;
 
+// Define proper types for the mock transaction
+type MockTransaction = {
+	insert: jest.MockedFunction<() => MockTransaction>;
+	values: jest.MockedFunction<(values: unknown) => MockTransaction>;
+	onConflictDoNothing: jest.MockedFunction<() => MockTransaction>;
+	execute: jest.MockedFunction<() => Promise<{ rowCount: number | null }>>;
+};
+
+// Define the type for the async generator
+type DbRow = {
+	matchRecord: {
+		id: string;
+		compLevel: string;
+		setNumber: number;
+		matchNumber: number;
+		eventKey: string;
+		winningAlliance: Alliance;
+	};
+	teamMatchRecords: Array<{
+		matchId: string;
+		teamNumber: number;
+		alliance: Alliance;
+		alliancePosition: number;
+	}>;
+	teamRecords: Array<{
+		teamNumber: number;
+		teamName: string;
+	}>;
+};
+
 describe("insertMatchSchedule", () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
@@ -32,7 +62,7 @@ describe("insertMatchSchedule", () => {
 
 	it("should insert single match successfully", async () => {
 		// Mock transaction
-		const mockTx = {
+		const mockTx: MockTransaction = {
 			insert: jest.fn().mockReturnThis(),
 			values: jest.fn().mockReturnThis(),
 			onConflictDoNothing: jest.fn().mockReturnThis(),
@@ -40,11 +70,13 @@ describe("insertMatchSchedule", () => {
 		};
 
 		mockDb.transaction.mockImplementation(async (callback) => {
-			return await callback(mockTx as any);
+			return await callback(
+				mockTx as unknown as Parameters<typeof callback>[0]
+			);
 		});
 
 		// Create test data
-		const testRows = [
+		const testRows: DbRow[] = [
 			{
 				matchRecord: {
 					id: "test_qm1_1",
@@ -76,13 +108,13 @@ describe("insertMatchSchedule", () => {
 		];
 
 		// Create async generator for test data
-		async function* generateRows() {
+		async function* generateRows(): AsyncIterable<DbRow> {
 			for (const row of testRows) {
 				yield row;
 			}
 		}
 
-		const result = await insertMatchSchedule(generateRows() as any);
+		const result = await insertMatchSchedule(generateRows());
 
 		// Verify transaction was called
 		expect(mockDb.transaction).toHaveBeenCalledTimes(1);
@@ -113,7 +145,7 @@ describe("insertMatchSchedule", () => {
 
 	it("should insert multiple matches successfully", async () => {
 		// Mock transaction
-		const mockTx = {
+		const mockTx: MockTransaction = {
 			insert: jest.fn().mockReturnThis(),
 			values: jest.fn().mockReturnThis(),
 			onConflictDoNothing: jest.fn().mockReturnThis(),
@@ -121,11 +153,13 @@ describe("insertMatchSchedule", () => {
 		};
 
 		mockDb.transaction.mockImplementation(async (callback) => {
-			return await callback(mockTx as any);
+			return await callback(
+				mockTx as unknown as Parameters<typeof callback>[0]
+			);
 		});
 
 		// Create test data for multiple matches
-		const testRows = [
+		const testRows: DbRow[] = [
 			{
 				matchRecord: {
 					id: "test_qm1_1",
@@ -185,13 +219,13 @@ describe("insertMatchSchedule", () => {
 		];
 
 		// Create async generator for test data
-		async function* generateRows() {
+		async function* generateRows(): AsyncIterable<DbRow> {
 			for (const row of testRows) {
 				yield row;
 			}
 		}
 
-		const result = await insertMatchSchedule(generateRows() as any);
+		const result = await insertMatchSchedule(generateRows());
 
 		// Verify transaction was called
 		expect(mockDb.transaction).toHaveBeenCalledTimes(1);
@@ -209,7 +243,7 @@ describe("insertMatchSchedule", () => {
 
 	it("should handle empty rows gracefully", async () => {
 		// Mock transaction
-		const mockTx = {
+		const mockTx: MockTransaction = {
 			insert: jest.fn().mockReturnThis(),
 			values: jest.fn().mockReturnThis(),
 			onConflictDoNothing: jest.fn().mockReturnThis(),
@@ -217,15 +251,17 @@ describe("insertMatchSchedule", () => {
 		};
 
 		mockDb.transaction.mockImplementation(async (callback) => {
-			return await callback(mockTx as any);
+			return await callback(
+				mockTx as unknown as Parameters<typeof callback>[0]
+			);
 		});
 
 		// Create empty async generator
-		async function* generateEmptyRows() {
+		async function* generateEmptyRows(): AsyncIterable<DbRow> {
 			// No rows to yield
 		}
 
-		const result = await insertMatchSchedule(generateEmptyRows() as any);
+		const result = await insertMatchSchedule(generateEmptyRows());
 
 		// Verify transaction was called
 		expect(mockDb.transaction).toHaveBeenCalledTimes(1);
@@ -245,7 +281,7 @@ describe("insertMatchSchedule", () => {
 
 	it("should handle database conflicts with onConflictDoNothing", async () => {
 		// Mock transaction with different row counts to simulate conflicts
-		const mockTx = {
+		const mockTx: MockTransaction = {
 			insert: jest.fn().mockReturnThis(),
 			values: jest.fn().mockReturnThis(),
 			onConflictDoNothing: jest.fn().mockReturnThis(),
@@ -260,11 +296,13 @@ describe("insertMatchSchedule", () => {
 		};
 
 		mockDb.transaction.mockImplementation(async (callback) => {
-			return await callback(mockTx as any);
+			return await callback(
+				mockTx as unknown as Parameters<typeof callback>[0]
+			);
 		});
 
 		// Create test data
-		const testRows = [
+		const testRows: DbRow[] = [
 			{
 				matchRecord: {
 					id: "test_qm1_1",
@@ -306,7 +344,7 @@ describe("insertMatchSchedule", () => {
 		];
 
 		// Create async generator for test data
-		async function* generateRows() {
+		async function* generateRows(): AsyncIterable<DbRow> {
 			for (const row of testRows) {
 				yield row;
 			}
@@ -324,7 +362,7 @@ describe("insertMatchSchedule", () => {
 
 	it("should handle null rowCount from database", async () => {
 		// Mock transaction with null rowCount
-		const mockTx = {
+		const mockTx: MockTransaction = {
 			insert: jest.fn().mockReturnThis(),
 			values: jest.fn().mockReturnThis(),
 			onConflictDoNothing: jest.fn().mockReturnThis(),
@@ -332,11 +370,13 @@ describe("insertMatchSchedule", () => {
 		};
 
 		mockDb.transaction.mockImplementation(async (callback) => {
-			return await callback(mockTx as any);
+			return await callback(
+				mockTx as unknown as Parameters<typeof callback>[0]
+			);
 		});
 
 		// Create test data
-		const testRows = [
+		const testRows: DbRow[] = [
 			{
 				matchRecord: {
 					id: "test_qm1_1",
@@ -352,7 +392,7 @@ describe("insertMatchSchedule", () => {
 		];
 
 		// Create async generator for test data
-		async function* generateRows() {
+		async function* generateRows(): AsyncIterable<DbRow> {
 			for (const row of testRows) {
 				yield row;
 			}
@@ -374,7 +414,7 @@ describe("insertMatchSchedule", () => {
 		mockDb.transaction.mockRejectedValue(dbError);
 
 		// Create test data
-		const testRows = [
+		const testRows: DbRow[] = [
 			{
 				matchRecord: {
 					id: "test_qm1_1",
@@ -390,7 +430,7 @@ describe("insertMatchSchedule", () => {
 		];
 
 		// Create async generator for test data
-		async function* generateRows() {
+		async function* generateRows(): AsyncIterable<DbRow> {
 			for (const row of testRows) {
 				yield row;
 			}
@@ -403,7 +443,7 @@ describe("insertMatchSchedule", () => {
 
 	it("should propagate database execution errors", async () => {
 		// Mock transaction with execution error
-		const mockTx = {
+		const mockTx: MockTransaction = {
 			insert: jest.fn().mockReturnThis(),
 			values: jest.fn().mockReturnThis(),
 			onConflictDoNothing: jest.fn().mockReturnThis(),
@@ -411,11 +451,13 @@ describe("insertMatchSchedule", () => {
 		};
 
 		mockDb.transaction.mockImplementation(async (callback) => {
-			return await callback(mockTx as any);
+			return await callback(
+				mockTx as unknown as Parameters<typeof callback>[0]
+			);
 		});
 
 		// Create test data
-		const testRows = [
+		const testRows: DbRow[] = [
 			{
 				matchRecord: {
 					id: "test_qm1_1",
@@ -431,7 +473,7 @@ describe("insertMatchSchedule", () => {
 		];
 
 		// Create async generator for test data
-		async function* generateRows() {
+		async function* generateRows(): AsyncIterable<DbRow> {
 			for (const row of testRows) {
 				yield row;
 			}
@@ -444,7 +486,7 @@ describe("insertMatchSchedule", () => {
 
 	it("should handle large datasets efficiently", async () => {
 		// Mock transaction
-		const mockTx = {
+		const mockTx: MockTransaction = {
 			insert: jest.fn().mockReturnThis(),
 			values: jest.fn().mockReturnThis(),
 			onConflictDoNothing: jest.fn().mockReturnThis(),
@@ -452,11 +494,13 @@ describe("insertMatchSchedule", () => {
 		};
 
 		mockDb.transaction.mockImplementation(async (callback) => {
-			return await callback(mockTx as any);
+			return await callback(
+				mockTx as unknown as Parameters<typeof callback>[0]
+			);
 		});
 
 		// Create large dataset (100 matches)
-		const testRows = Array.from({ length: 100 }, (_, i) => ({
+		const testRows: DbRow[] = Array.from({ length: 100 }, (_, i) => ({
 			matchRecord: {
 				id: `test_qm1_${i + 1}`,
 				compLevel: "qm",
@@ -486,7 +530,7 @@ describe("insertMatchSchedule", () => {
 		}));
 
 		// Create async generator for test data
-		async function* generateRows() {
+		async function* generateRows(): AsyncIterable<DbRow> {
 			for (const row of testRows) {
 				yield row;
 			}
