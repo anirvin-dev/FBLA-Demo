@@ -19,7 +19,7 @@ describe("generateMatchId", () => {
 	});
 });
 
-describe("transformers", () => {
+describe("csvRowToDbRow", () => {
 	it("should transform a CSV row to a database row", () => {
 		const csvRow = {
 			matchNumber: 1,
