@@ -76,12 +76,17 @@ function parseMatchScoreBreakdown(
 }
 
 export async function seedMatches(eventKey: string) {
-	if (!eventKey) {
-		throw new Error("Event key is required");
+	// Validate eventKey
+	const eventKeySchema = z
+		.string()
+		.regex(/^[a-zA-Z0-9_-]+$/, "Invalid event key format");
+	const parsedEventKey = eventKeySchema.safeParse(eventKey);
+	if (!parsedEventKey.success) {
+		throw new Error("Invalid event key");
 	}
 
 	const matches = await fetch(
-		`https://www.thebluealliance.com/api/v3/event/${eventKey}/matches`,
+		`https://www.thebluealliance.com/api/v3/event/${parsedEventKey.data}/matches`,
 		{
 			headers: {
 				"X-TBA-Auth-Key": process.env.TBA_API_KEY!,
