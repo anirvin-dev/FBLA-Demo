@@ -1,3 +1,4 @@
+import "server-only";
 import { insertMatchSchedule } from "./db";
 import { ValidationError } from "./errors";
 import { parseCsv } from "./parser";
