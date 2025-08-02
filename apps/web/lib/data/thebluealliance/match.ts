@@ -76,8 +76,10 @@ function parseMatchScoreBreakdown(
 }
 
 export async function seedMatches(eventKey: string) {
-	// Validate eventKey to prevent SSRF
-	const eventKeySchema = z.string().regex(/^[a-zA-Z0-9_\-]+$/, "Invalid event key format");
+	// Validate eventKey
+	const eventKeySchema = z
+		.string()
+		.regex(/^[a-zA-Z0-9_\-]+$/, "Invalid event key format");
 	const parsedEventKey = eventKeySchema.safeParse(eventKey);
 	if (!parsedEventKey.success) {
 		throw new Error("Invalid event key");
