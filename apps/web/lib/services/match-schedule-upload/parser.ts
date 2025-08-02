@@ -7,13 +7,13 @@ import { parse } from "csv-parse";
 import { z } from "zod";
 
 const RowSchema = z.object({
-	matchNumber: z.number(),
-	blue1: z.number(),
-	blue2: z.number(),
-	blue3: z.number(),
-	red1: z.number(),
-	red2: z.number(),
-	red3: z.number(),
+	matchNumber: z.coerce.number(),
+	blue1: z.coerce.number(),
+	blue2: z.coerce.number(),
+	blue3: z.coerce.number(),
+	red1: z.coerce.number(),
+	red2: z.coerce.number(),
+	red3: z.coerce.number(),
 });
 
 export async function* parseCsv(csvBuffer: Buffer): AsyncGenerator<RawCsvRow> {
