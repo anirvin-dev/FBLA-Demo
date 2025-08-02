@@ -20,7 +20,11 @@ export function generateMatchId(
 	compLevel = "qm",
 	setNumber = 1
 ) {
-	return `${eventCode}_${compLevel}${setNumber}_${matchNumber}`; // fits <32 chars
+	const matchId = `${eventCode}_${compLevel}${setNumber}_${matchNumber}`;
+	if (matchId.length > 32) {
+		throw new Error("Match ID is too long");
+	}
+	return matchId;
 }
 
 export function csvRowToDbRow(csvRow: RawCsvRow, eventCode: string) {

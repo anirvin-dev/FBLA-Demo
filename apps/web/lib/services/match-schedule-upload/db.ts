@@ -14,7 +14,7 @@ export async function insertMatchSchedule(
 		teamMatchesInserted: 0,
 	};
 
-	/* Creates a transaction to insert the match schedule into the database. This is to ensure that the insertions are atomic, and that if any of the insertions fail, the entire operation fails. */
+	//  Creates a transaction to insert the match schedule into the database. This is to ensure that the insertions are atomic, and that if any of the insertions fail, the entire operation fails.
 	await db.transaction(async (tx) => {
 		for await (const {
 			teamRecords,

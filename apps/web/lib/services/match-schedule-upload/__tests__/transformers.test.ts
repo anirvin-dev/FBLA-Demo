@@ -1,5 +1,23 @@
-import { csvRowToDbRow } from "../transformers";
+import { csvRowToDbRow, generateMatchId } from "../transformers";
 import { RawCsvRow } from "../types";
+
+describe("generateMatchId", () => {
+	it("should generate a match ID", () => {
+		const matchId = generateMatchId("test", 1);
+		expect(matchId).toEqual("test_qm1_1");
+	});
+
+	it("should throw an error if the match ID is too long", () => {
+		expect(() =>
+			generateMatchId(
+				"asupersupersupersuperlongeventcodethatisdefinitelylongerthan32characters",
+				1,
+				"qm",
+				1000
+			)
+		).toThrow("Match ID is too long");
+	});
+});
 
 describe("transformers", () => {
 	it("should transform a CSV row to a database row", () => {
