@@ -1,5 +1,6 @@
 import { auth } from "@/lib/auth";
-import { isAdmin } from "@/lib/data/auth";
+import { isSessionAuthorized } from "@/lib/auth/utils";
+import { UserRole } from "@/lib/database/schema";
 import { uploadMatchSchedule } from "@/lib/services/match-schedule-upload";
 import {
 	MalformedCsvError,
@@ -7,21 +8,8 @@ import {
 } from "@/lib/services/match-schedule-upload/errors";
 import { NextResponse } from "next/server";
 
-/**
- * Handles the upload of a match schedule CSV file to the database.
- *
- * @param request - The request object
- * @returns A response object
- */
-export async function POST(request: Request) {
-	const session = await auth();
-
-	if (!session?.user) {
-		return new Response("Unauthorized", { status: 401 });
-	}
-
-	// ensure only admins can upload match schedules
-	if (!(await isAdmin())) {
+export const POST = auth(async (request) => {
+	if (!isSessionAuthorized(UserRole.ADMIN, request.auth)) {
 		return new Response("Forbidden", { status: 403 });
 	}
 
@@ -47,4 +35,4 @@ export async function POST(request: Request) {
 		}
 		return new Response("Internal server error", { status: 500 });
 	}
-}
+});

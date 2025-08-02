@@ -86,7 +86,14 @@ function roleIndex(userRole: UserRole) {
 	return userRoleOrdering.indexOf(userRole);
 }
 
-export function isSessionAuthorized(requiredRole: UserRole, session: Session) {
+export function isSessionAuthorized(
+	requiredRole: UserRole,
+	session: Session | null
+) {
+	if (!session) {
+		return false;
+	}
+
 	return (
 		session.user.role &&
 		session.user.role !== UserRole.BANISHED &&
@@ -112,5 +119,11 @@ export async function checkSession(
 				? AuthErrors.BANISHED
 				: AuthErrors.UNAUTHORIZED
 		);
+	}
+}
+
+export function hasPermission(session: Session, requiredRole: UserRole) {
+	if (session.user.role === UserRole.BANISHED) {
+		return false;
 	}
 }
