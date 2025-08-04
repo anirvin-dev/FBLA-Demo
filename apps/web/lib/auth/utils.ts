@@ -121,9 +121,3 @@ export async function checkSession(
 		);
 	}
 }
-
-export function hasPermission(session: Session, requiredRole: UserRole) {
-	if (session.user.role === UserRole.BANISHED) {
-		return false;
-	}
-}
