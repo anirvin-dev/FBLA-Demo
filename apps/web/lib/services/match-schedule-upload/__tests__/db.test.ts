@@ -1,4 +1,5 @@
 import { insertMatchSchedule } from "../db";
+import { UploadOptions } from "../types";
 
 import { db } from "@/lib/database";
 import { Alliance } from "@/lib/database/schema";
@@ -16,6 +17,7 @@ jest.mock("@/lib/database/schema", () => ({
 	team: "team_table",
 	match: "match_table",
 	teamMatch: "team_match_table",
+	tournament: "tournament_table",
 	Alliance: {
 		RED: "red",
 		BLUE: "blue",
@@ -56,6 +58,14 @@ type DbRow = {
 };
 
 describe("insertMatchSchedule", () => {
+	const mockUploadOptions: UploadOptions = {
+		eventCode: "test",
+		eventName: "Test Event",
+		startDate: new Date("2024-01-01"),
+		endDate: new Date("2024-01-02"),
+		csvBuffer: Buffer.from("test"),
+	};
+
 	beforeEach(() => {
 		jest.clearAllMocks();
 	});
@@ -114,10 +124,22 @@ describe("insertMatchSchedule", () => {
 			}
 		}
 
-		const result = await insertMatchSchedule(generateRows());
+		const result = await insertMatchSchedule(
+			mockUploadOptions,
+			generateRows()
+		);
 
 		// Verify transaction was called
 		expect(mockDb.transaction).toHaveBeenCalledTimes(1);
+
+		// Verify tournament insertion
+		expect(mockTx.insert).toHaveBeenCalledWith(schema.tournament);
+		expect(mockTx.values).toHaveBeenCalledWith({
+			id: mockUploadOptions.eventCode,
+			eventName: mockUploadOptions.eventName,
+			startDate: mockUploadOptions.startDate.toISOString(),
+			endDate: mockUploadOptions.endDate.toISOString(),
+		});
 
 		// Verify team insertions
 		expect(mockTx.insert).toHaveBeenCalledWith(schema.team);
@@ -135,8 +157,9 @@ describe("insertMatchSchedule", () => {
 			testRows[0]!.teamMatchRecords
 		);
 
-		// Verify result - each match has 2 teams, 1 match, and 2 team matches
+		// Verify result - includes tournament insertion
 		expect(result).toEqual({
+			tournamentInserted: 1,
 			teamsInserted: 1,
 			matchesInserted: 1,
 			teamMatchesInserted: 1,
@@ -225,16 +248,20 @@ describe("insertMatchSchedule", () => {
 			}
 		}
 
-		const result = await insertMatchSchedule(generateRows());
+		const result = await insertMatchSchedule(
+			mockUploadOptions,
+			generateRows()
+		);
 
 		// Verify transaction was called
 		expect(mockDb.transaction).toHaveBeenCalledTimes(1);
 
-		// Verify execute was called for each match (3 insertions per match)
-		expect(mockTx.execute).toHaveBeenCalledTimes(6);
+		// Verify execute was called for each match (1 tournament + 3 insertions per match)
+		expect(mockTx.execute).toHaveBeenCalledTimes(7);
 
-		// Verify result - 4 teams total (2 per match), 2 matches, 4 team matches (2 per match)
+		// Verify result - includes tournament insertion
 		expect(result).toEqual({
+			tournamentInserted: 1,
 			teamsInserted: 2,
 			matchesInserted: 2,
 			teamMatchesInserted: 2,
@@ -247,7 +274,7 @@ describe("insertMatchSchedule", () => {
 			insert: jest.fn().mockReturnThis(),
 			values: jest.fn().mockReturnThis(),
 			onConflictDoNothing: jest.fn().mockReturnThis(),
-			execute: jest.fn().mockResolvedValue({ rowCount: 0 }),
+			execute: jest.fn().mockResolvedValue({ rowCount: 1 }), // Tournament should be inserted
 		};
 
 		mockDb.transaction.mockImplementation(async (callback) => {
@@ -261,18 +288,21 @@ describe("insertMatchSchedule", () => {
 			// No rows to yield
 		}
 
-		const result = await insertMatchSchedule(generateEmptyRows());
+		const result = await insertMatchSchedule(
+			mockUploadOptions,
+			generateEmptyRows()
+		);
 
 		// Verify transaction was called
 		expect(mockDb.transaction).toHaveBeenCalledTimes(1);
 
-		// Verify no database operations were performed
-		expect(mockTx.insert).not.toHaveBeenCalled();
-		expect(mockTx.values).not.toHaveBeenCalled();
-		expect(mockTx.execute).not.toHaveBeenCalled();
+		// Verify tournament was inserted but no other operations
+		expect(mockTx.insert).toHaveBeenCalledWith(schema.tournament);
+		expect(mockTx.execute).toHaveBeenCalledTimes(1);
 
 		// Verify result
 		expect(result).toEqual({
+			tournamentInserted: 1,
 			teamsInserted: 0,
 			matchesInserted: 0,
 			teamMatchesInserted: 0,
@@ -287,6 +317,7 @@ describe("insertMatchSchedule", () => {
 			onConflictDoNothing: jest.fn().mockReturnThis(),
 			execute: jest
 				.fn()
+				.mockResolvedValueOnce({ rowCount: 0 }) // Tournament already exists
 				.mockResolvedValueOnce({ rowCount: 0 }) // Team already exists
 				.mockResolvedValueOnce({ rowCount: 1 }) // Match inserted
 				.mockResolvedValueOnce({ rowCount: 0 }) // Team match already exists
@@ -350,10 +381,14 @@ describe("insertMatchSchedule", () => {
 			}
 		}
 
-		const result = await insertMatchSchedule(generateRows());
+		const result = await insertMatchSchedule(
+			mockUploadOptions,
+			generateRows()
+		);
 
 		// Verify result reflects actual insertions (not conflicts)
 		expect(result).toEqual({
+			tournamentInserted: 0, // Tournament already existed
 			teamsInserted: 1, // Only 1 team was actually inserted
 			matchesInserted: 2, // Both matches were inserted
 			teamMatchesInserted: 0, // No team matches were inserted due to conflicts
@@ -398,10 +433,14 @@ describe("insertMatchSchedule", () => {
 			}
 		}
 
-		const result = await insertMatchSchedule(generateRows());
+		const result = await insertMatchSchedule(
+			mockUploadOptions,
+			generateRows()
+		);
 
 		// Verify result handles null rowCount correctly
 		expect(result).toEqual({
+			tournamentInserted: 0,
 			teamsInserted: 0,
 			matchesInserted: 0,
 			teamMatchesInserted: 0,
@@ -436,9 +475,9 @@ describe("insertMatchSchedule", () => {
 			}
 		}
 
-		await expect(insertMatchSchedule(generateRows())).rejects.toThrow(
-			"Database connection failed"
-		);
+		await expect(
+			insertMatchSchedule(mockUploadOptions, generateRows())
+		).rejects.toThrow("Database connection failed");
 	});
 
 	it("should propagate database execution errors", async () => {
@@ -479,9 +518,9 @@ describe("insertMatchSchedule", () => {
 			}
 		}
 
-		await expect(insertMatchSchedule(generateRows())).rejects.toThrow(
-			"Insert failed"
-		);
+		await expect(
+			insertMatchSchedule(mockUploadOptions, generateRows())
+		).rejects.toThrow("Insert failed");
 	});
 
 	it("should handle large datasets efficiently", async () => {
@@ -536,16 +575,20 @@ describe("insertMatchSchedule", () => {
 			}
 		}
 
-		const result = await insertMatchSchedule(generateRows());
+		const result = await insertMatchSchedule(
+			mockUploadOptions,
+			generateRows()
+		);
 
 		// Verify transaction was called
 		expect(mockDb.transaction).toHaveBeenCalledTimes(1);
 
-		// Verify execute was called for each match (3 insertions per match)
-		expect(mockTx.execute).toHaveBeenCalledTimes(300);
+		// Verify execute was called for each match (1 tournament + 3 insertions per match)
+		expect(mockTx.execute).toHaveBeenCalledTimes(301);
 
-		// Verify result - 200 teams total (2 per match), 100 matches, 200 team matches (2 per match)
+		// Verify result - includes tournament insertion
 		expect(result).toEqual({
+			tournamentInserted: 1,
 			teamsInserted: 100,
 			matchesInserted: 100,
 			teamMatchesInserted: 100,

@@ -105,6 +105,7 @@ describe("uploadMatchSchedule", () => {
 		mockCsvRowToDbRow.mockReturnValue(mockDbRow);
 
 		const expectedResult: UploadResult = {
+			tournamentInserted: 1,
 			teamsInserted: 6,
 			matchesInserted: 1,
 			teamMatchesInserted: 6,
@@ -120,6 +121,9 @@ describe("uploadMatchSchedule", () => {
 		const result = await uploadMatchSchedule({
 			csvBuffer,
 			eventCode,
+			eventName: "Test Event",
+			startDate: new Date("2024-01-01"),
+			endDate: new Date("2024-01-02"),
 		});
 
 		// Verify the result
@@ -174,6 +178,7 @@ describe("uploadMatchSchedule", () => {
 			});
 
 		const expectedResult: UploadResult = {
+			tournamentInserted: 1,
 			teamsInserted: 12,
 			matchesInserted: 2,
 			teamMatchesInserted: 12,
@@ -189,6 +194,9 @@ describe("uploadMatchSchedule", () => {
 		const result = await uploadMatchSchedule({
 			csvBuffer,
 			eventCode,
+			eventName: "Test Event",
+			startDate: new Date("2024-01-01"),
+			endDate: new Date("2024-01-02"),
 		});
 
 		expect(result).toEqual(expectedResult);
@@ -214,6 +222,7 @@ describe("uploadMatchSchedule", () => {
 		});
 
 		mockInsertMatchSchedule.mockResolvedValue({
+			tournamentInserted: 1,
 			teamsInserted: 6,
 			matchesInserted: 1,
 			teamMatchesInserted: 6,
@@ -228,6 +237,9 @@ describe("uploadMatchSchedule", () => {
 		await uploadMatchSchedule({
 			csvBuffer,
 			eventCode,
+			eventName: "Test Event",
+			startDate: new Date("2024-01-01"),
+			endDate: new Date("2024-01-02"),
 		});
 
 		// Verify the function completed successfully
@@ -242,6 +254,9 @@ describe("uploadMatchSchedule", () => {
 			uploadMatchSchedule({
 				csvBuffer,
 				eventCode,
+				eventName: "Test Event",
+				startDate: new Date("2024-01-01"),
+				endDate: new Date("2024-01-02"),
 			})
 		).rejects.toThrow(ValidationError);
 
@@ -257,6 +272,9 @@ describe("uploadMatchSchedule", () => {
 			uploadMatchSchedule({
 				csvBuffer: null as unknown as Buffer,
 				eventCode,
+				eventName: "Test Event",
+				startDate: new Date("2024-01-01"),
+				endDate: new Date("2024-01-02"),
 			})
 		).rejects.toThrow(ValidationError);
 
@@ -272,6 +290,9 @@ describe("uploadMatchSchedule", () => {
 			uploadMatchSchedule({
 				csvBuffer: undefined as unknown as Buffer,
 				eventCode,
+				eventName: "Test Event",
+				startDate: new Date("2024-01-01"),
+				endDate: new Date("2024-01-02"),
 			})
 		).rejects.toThrow(ValidationError);
 
@@ -290,6 +311,9 @@ describe("uploadMatchSchedule", () => {
 			uploadMatchSchedule({
 				csvBuffer,
 				eventCode,
+				eventName: "Test Event",
+				startDate: new Date("2024-01-01"),
+				endDate: new Date("2024-01-02"),
 			})
 		).rejects.toThrow(ValidationError);
 
@@ -308,6 +332,9 @@ describe("uploadMatchSchedule", () => {
 			uploadMatchSchedule({
 				csvBuffer,
 				eventCode,
+				eventName: "Test Event",
+				startDate: new Date("2024-01-01"),
+				endDate: new Date("2024-01-02"),
 			})
 		).rejects.toThrow(ValidationError);
 
@@ -350,6 +377,9 @@ describe("uploadMatchSchedule", () => {
 			uploadMatchSchedule({
 				csvBuffer,
 				eventCode,
+				eventName: "Test Event",
+				startDate: new Date("2024-01-01"),
+				endDate: new Date("2024-01-02"),
 			})
 		).rejects.toThrow("Database insertion failed");
 	});

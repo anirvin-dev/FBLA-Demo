@@ -5,6 +5,7 @@ export interface RawCsvRow {
 }
 
 export interface UploadResult {
+	tournamentInserted: number;
 	teamsInserted: number;
 	matchesInserted: number;
 	teamMatchesInserted: number;
@@ -12,5 +13,8 @@ export interface UploadResult {
 
 export interface UploadOptions {
 	eventCode: string;
+	eventName: string;
+	startDate: Date;
+	endDate: Date;
 	csvBuffer: Buffer;
 }

@@ -21,5 +21,5 @@ export async function uploadMatchSchedule(
 		}
 	})();
 
-	return insertMatchSchedule(recordsIter);
+	return insertMatchSchedule(opts, recordsIter);
 }
