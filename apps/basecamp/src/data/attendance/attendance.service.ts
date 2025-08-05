@@ -243,13 +243,6 @@ export class AttendanceService {
     }
   }
 
-  /**
-   * Get the total hours worked by a user
-   * @param discordId The Discord ID of the user
-   *
-   * @throws Error if the attendance record is invalid
-   * @returns The total hours worked by the user
-   */
   public async getUserHours(discordId: string): Promise<number> {
     const attendance = await this.getAttendance(discordId);
 
@@ -270,5 +263,67 @@ export class AttendanceService {
     }
 
     return hours;
+  }
+
+  public async getTopMembersByHours(limit: number = 5) {
+    try {
+      const allAttendance = await this.sheetService.getSheetValues(
+        this.attendanceSheetId,
+        'Attendance!A:E',
+      );
+
+      if (!allAttendance?.length) return [];
+
+      // Map of discordId -> { userName, hourTotal }
+      const userData = new Map<string, { userName: string; hourTotal: number }>();
+      // Map of discordId -> lastSignInTime
+      const lastSignIn = new Map<string, Date>();
+      const now = new Date();
+
+      // Process each record (skip header row)
+      for (let i = 1; i < allAttendance.length; i++) {
+        const row = allAttendance[i];
+        if (!row?.[4]) continue;
+
+        const discordId = String(row[0]);
+        const discordName = String(row[2]);
+        const timestamp = new Date(String(row[3]));
+        const isSignIn = row[4] === 'true' || row[4] === 'TRUE';
+
+        // Initialize user data if it doesn't exist
+        if (!userData.has(discordId)) {
+          userData.set(discordId, { userName: discordName, hourTotal: 0 });
+        }
+
+        if (isSignIn) {
+          lastSignIn.set(discordId, timestamp);
+        } else if (lastSignIn.has(discordId)) {
+          const user = userData.get(discordId)!;
+          const signInTime = lastSignIn.get(discordId)!;
+          const hours = (timestamp.getTime() - signInTime.getTime()) / 3.6e6;
+          if (hours > 0) user.hourTotal += hours;
+          lastSignIn.delete(discordId);
+        }
+      }
+
+      // Handle users still signed in
+      lastSignIn.forEach((signInTime, discordId) => {
+        const user = userData.get(discordId);
+        if (user) {
+          const hours = (now.getTime() - signInTime.getTime()) / 3.6e6;
+          if (hours > 0) user.hourTotal += hours;
+        }
+      });
+
+      // Convert to array, sort, and limit results
+      return Array.from(userData.values())
+        .filter(user => user.hourTotal > 0)
+        .sort((a, b) => b.hourTotal - a.hourTotal)
+        .slice(0, limit)
+        .map(({ userName, hourTotal: totalHours }) => ({ userName, totalHours }));
+    } catch (error) {
+      this.logger.error(`Error getting attendance leaderboard:`, error);
+      return [];
+    }
   }
 }
