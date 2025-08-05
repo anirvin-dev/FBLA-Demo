@@ -272,7 +272,7 @@ export const tournament = pgTable(
 
 export const team = pgTable("team", {
 	teamNumber: integer("team_number").notNull().primaryKey(),
-	teamName: varchar("team_name", { length: 256 }).notNull(),
+	teamName: varchar("team_name", { length: 256 }).notNull().default(""),
 });
 
 export const teamMatchStats = pgView("team_match_stats").as((qb) =>
