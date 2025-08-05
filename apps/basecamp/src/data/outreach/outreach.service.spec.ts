@@ -86,9 +86,31 @@ describe('OutreachService', () => {
   });
 
   describe('getTopMembersByHours', () => {
-    it('should return top 5 members sorted by total hours in descending order', async () => {
-      sheetService.getSheetValues.mockResolvedValue(mockSheetData);
+    let mockGetSheetValues: jest.Mock;
 
+    beforeEach(() => {
+      mockGetSheetValues = jest.fn();
+      (sheetService.getSheetValues as jest.MockedFunction<
+        typeof sheetService.getSheetValues
+      >) = mockGetSheetValues;
+    });
+
+    it('should return empty array when no outreach data', async () => {
+      mockGetSheetValues.mockResolvedValue([
+        ['Date', 'Name', 'Event', 'Type', 'Hours'],
+      ]);
+      const result = await service.getTopMembersByHours(5);
+      expect(result).toEqual([]);
+    });
+
+    it('should handle API errors and return empty array', async () => {
+      mockGetSheetValues.mockRejectedValue(new Error('API Error'));
+      const result = await service.getTopMembersByHours(5);
+      expect(result).toEqual([]);
+    });
+
+    it('should return top 5 members sorted by total hours in descending order', async () => {
+      mockGetSheetValues.mockResolvedValue(mockSheetData);
       const result = await service.getTopMembersByHours(5);
 
       expect(result).toEqual([

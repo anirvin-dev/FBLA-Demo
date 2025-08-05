@@ -196,7 +196,7 @@ export class BotCommands {
       //Floors hours to the nearest integer
       const hoursString = Math.floor(hours);
       //Calculates hoursPercentage without rounding anything
-      const hoursPercentage = ((hours / TOTAL_HOURS) * 100);
+      const hoursPercentage = (hours / TOTAL_HOURS) * 100;
       //Rounds hoursPercentage to 2 decimal places
       const hoursPercentageString = hoursPercentage.toFixed(2);
 
@@ -225,10 +225,12 @@ export class BotCommands {
   }
 
   @SlashCommand({
-    name: 'leaderboard',
+    name: 'outreach-leaderboard',
     description: 'Show the top 5 members by outreach hours',
   })
-  public async onLeaderboard(@Context() [interaction]: SlashCommandContext) {
+  public async onOutreachLeaderboard(
+    @Context() [interaction]: SlashCommandContext,
+  ) {
     const leaderboard = await this.outreachService.getTopMembersByHours(5);
 
     if (!leaderboard || leaderboard.length === 0) {
@@ -264,6 +266,52 @@ export class BotCommands {
     });
 
     leaderboardString += '\n*Updated in real-time from outreach records*';
+
+    return interaction.reply(leaderboardString);
+  }
+
+  @SlashCommand({
+    name: 'attendance-leaderboard',
+    description: 'Show the top 5 members by attendance hours',
+  })
+  public async onAttendanceLeaderboard(
+    @Context() [interaction]: SlashCommandContext,
+  ) {
+    const leaderboard = await this.attendanceService.getTopMembersByHours(5);
+
+    if (!leaderboard || leaderboard.length === 0) {
+      return interaction.reply('No attendance data found');
+    }
+
+    let leaderboardString = ':clock: **Attendance Leaderboard** :clock:\n\n';
+
+    leaderboard.forEach((entry, index) => {
+      const rank = index + 1;
+      let prefix = '';
+
+      // Medal emojis for top 3, numbers for 4th and 5th
+      switch (rank) {
+        case 1:
+          prefix = ':first_place_medal:';
+          break;
+        case 2:
+          prefix = ':second_place_medal:';
+          break;
+        case 3:
+          prefix = ':third_place_medal:';
+          break;
+        case 4:
+          prefix = '4.';
+          break;
+        case 5:
+          prefix = '5.';
+          break;
+      }
+
+      leaderboardString += `${prefix} **${entry.userName}** - ${entry.totalHours} hours\n`;
+    });
+
+    leaderboardString += '\n*Updated in real-time from attendance records*';
 
     return interaction.reply(leaderboardString);
   }
