@@ -4,6 +4,7 @@ import { Badge } from "@repo/ui/components/badge";
 import { Button } from "@repo/ui/components/button";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { SnowfallComponent } from "@/components/snowfall/snowfall";
 
 async function enterScoutingSite() {
 	"use server";
@@ -21,7 +22,9 @@ export default function Home() {
 		<div className="to-primary relative min-h-screen overflow-hidden bg-gradient-to-br from-[#7FB3D5] via-[#5499C7]">
 			{/* Frost overlay */}
 			<div className="pointer-events-none absolute inset-0 mix-blend-overlay backdrop-blur-[1px]" />
+			<SnowfallComponent />
 
+			{/* Background gradient */}
 			{/* Navigation */}
 			<nav className="absolute top-0 z-10 w-full p-6">
 				<div className="container mx-auto flex items-center justify-end">
