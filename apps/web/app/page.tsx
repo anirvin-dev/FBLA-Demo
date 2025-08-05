@@ -1,10 +1,10 @@
+import { SnowfallComponent } from "@/components/snowfall/snowfall";
 import { auth, signIn } from "@/lib/auth";
 import { UserRole } from "@/lib/database/schema";
 import { Badge } from "@repo/ui/components/badge";
 import { Button } from "@repo/ui/components/button";
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { SnowfallComponent } from "@/components/snowfall/snowfall";
 
 async function enterScoutingSite() {
 	"use server";
