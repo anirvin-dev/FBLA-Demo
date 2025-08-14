@@ -1,8 +1,8 @@
 import { AdvancedDataTable } from "./AdvancedDataTable";
+import { getAllTournaments } from "../actions/tournament-data";
 
 import { Skeleton } from "@repo/ui/components/skeleton";
 import { Suspense } from "react";
-import { getAllTournaments } from "../actions/tournament-data";
 
 export default async function AdvancedAnalysis({
 	searchParams,
