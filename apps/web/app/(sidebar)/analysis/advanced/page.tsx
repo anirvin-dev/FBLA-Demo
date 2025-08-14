@@ -2,6 +2,7 @@ import { AdvancedDataTable } from "./AdvancedDataTable";
 
 import { Skeleton } from "@repo/ui/components/skeleton";
 import { Suspense } from "react";
+import { getAllTournaments } from "../actions/tournament-data";
 
 export default async function AdvancedAnalysis({
 	searchParams,
@@ -9,7 +10,14 @@ export default async function AdvancedAnalysis({
 	searchParams: Promise<Record<string, string | undefined>>;
 }) {
 	const searchParamsObject = await searchParams;
-	const tournamentId = searchParamsObject.id;
+	let tournamentId = searchParamsObject.id;
+
+	if (!tournamentId) {
+		const tournaments = await getAllTournaments();
+		if (tournaments.success) {
+			tournamentId = tournaments.value.find((t) => t.isCurrent)?.id;
+		}
+	}
 
 	if (!tournamentId) {
 		return <div>No tournament ID provided</div>;

@@ -1,7 +1,7 @@
 import AdvancedDataTableClient from "./AdvancedDataTableClient";
 
 import { db } from "@/lib/database";
-import { match, team, teamMatchStats } from "@/lib/database/schema";
+import { match, team, teamMatchStats, tournament } from "@/lib/database/schema";
 import { avg, eq, sql } from "drizzle-orm";
 
 export type AdvancedTeamData = {
@@ -71,7 +71,8 @@ export async function AdvancedDataTable({ id }: { id: string }) {
 			})
 			.from(teamMatchStats)
 			.innerJoin(match, eq(match.id, teamMatchStats.matchId))
-			.where(eq(match.eventKey, id))
+			.innerJoin(tournament, eq(match.eventKey, tournament.id))
+			.where(eq(tournament.id, id))
 			.groupBy(teamMatchStats.teamNumber)
 	);
 
@@ -122,21 +123,21 @@ export async function AdvancedDataTable({ id }: { id: string }) {
 			},
 		})
 		.from(pointValues)
-		.innerJoin(team, eq(team.teamNumber, pointValues.team_number));
+		.leftJoin(team, eq(team.teamNumber, pointValues.team_number));
 
 	// Transform the data to match our client component's expected format
-	const formattedData: AdvancedTeamData[] = advancedData.map((team) => ({
-		team_number: team.team_number,
-		team_name: team.team_name,
-		auto_total: Number(team.auto_total.value),
-		teleop_total: Number(team.teleop_total.value),
-		endgame_total: Number(team.endgame_total.value),
-		coral_total: Number(team.coral_total.value),
-		algae_total: Number(team.algae_total.value),
+	const formattedData: AdvancedTeamData[] = advancedData.map((row) => ({
+		team_number: row.team_number,
+		team_name: row.team_name ?? "",
+		auto_total: Number(row.auto_total.value),
+		teleop_total: Number(row.teleop_total.value),
+		endgame_total: Number(row.endgame_total.value),
+		coral_total: Number(row.coral_total.value),
+		algae_total: Number(row.algae_total.value),
 		total_score:
-			Number(team.auto_total.value) +
-			Number(team.teleop_total.value) +
-			Number(team.endgame_total.value),
+			Number(row.auto_total.value) +
+			Number(row.teleop_total.value) +
+			Number(row.endgame_total.value),
 	}));
 
 	console.log(formattedData.filter((team) => team.team_number === 10120));
