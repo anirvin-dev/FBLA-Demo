@@ -5,7 +5,7 @@ import { TeamDataTable } from "./components/TeamDataTable";
 export default async function TeamData({
 	searchParams,
 }: {
-	searchParams: Promise<{ id: string }>;
+	searchParams: Promise<{ id?: string }>;
 }) {
 	const tournamentId = (await searchParams).id;
 	const teamDataResult = await scoutedTeamData(tournamentId);
