@@ -18,7 +18,7 @@
 	--yeti-700: oklch(0.4747 0.1025 241.12);
 	--yeti-800: oklch(0.4225 0.0866 240.08);
 	--yeti-900: oklch(0.3772 0.0722 240.33);
-	--slate-950: oklch(0.1288 0.0406 264.7);
+	--yeti-950: oklch(0.1288 0.0406 264.7);
 
 	--radius: 0.5rem;
 	--background: var(--color-white);
@@ -55,7 +55,7 @@
 }
 
 .dark {
-	--background: var(--yeti-950);
+	--background: var(--color-slate-950);
 	--foreground: oklch(0.985 0 0);
 	--card: oklch(0.21 0.006 285.885);
 	--card-foreground: oklch(0.985 0 0);
