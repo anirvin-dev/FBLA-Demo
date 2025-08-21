@@ -50,7 +50,11 @@ const navbarData = [
 		items: [
 			{ name: "Basic", icon: Grid2X2, href: "/analysis" },
 			{ name: "Advanced", icon: Sparkles, href: "/analysis/advanced" },
-			{ name: "Comparison", icon: FoldHorizontal, href: "/analysis/comparison" }
+			{
+				name: "Comparison",
+				icon: FoldHorizontal,
+				href: "/analysis/comparison",
+			},
 		],
 	},
 	{
@@ -64,12 +68,12 @@ const navbarData = [
 				icon: ChartBar,
 				href: "/admin/scoutalytics",
 			},
-			
+
 			{
 				name: "Match Upload",
 				icon: Calendar,
-				href: "/admin/tools/match-upload"
-			}
+				href: "/admin/tools/match-upload",
+			},
 		],
 	},
 ];
