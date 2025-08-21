@@ -3,11 +3,11 @@ import {
 	ServerActionError,
 } from "@/lib/actions/actions-utils";
 import { db } from "@/lib/database";
-import { match, team, teamMatchStats } from "@/lib/database/schema";
-import { avg, eq } from "drizzle-orm";
+import { match, team, teamMatchStats, tournament } from "@/lib/database/schema";
+import { avg, eq, sql } from "drizzle-orm";
 
 export const scoutedTeamData = createServerAction(
-	async (id: string): Promise<TeamData[]> => {
+	async (id: string | undefined): Promise<TeamData[]> => {
 		try {
 			const stats = db.$with("stats").as(
 				db
@@ -81,7 +81,12 @@ export const scoutedTeamData = createServerAction(
 					})
 					.from(teamMatchStats)
 					.innerJoin(match, eq(match.id, teamMatchStats.matchId))
-					.where(eq(match.eventKey, id))
+					.innerJoin(tournament, eq(match.eventKey, tournament.id))
+					.where(
+						id
+							? eq(tournament.id, id)
+							: eq(tournament.isCurrent, true)
+					)
 					.groupBy(teamMatchStats.teamNumber)
 			);
 
@@ -89,7 +94,7 @@ export const scoutedTeamData = createServerAction(
 				.with(stats)
 				.select({
 					team_number: stats.team_number,
-					team_name: team.teamName,
+					team_name: sql<string>`COALESCE(${team.teamName}, '')`,
 					auto_coral_level_1: stats.auto_coral_level_1,
 					auto_coral_level_2: stats.auto_coral_level_2,
 					auto_coral_level_3: stats.auto_coral_level_3,
@@ -109,7 +114,7 @@ export const scoutedTeamData = createServerAction(
 					initiation_line: stats.initiation_line,
 				})
 				.from(stats)
-				.innerJoin(team, eq(team.teamNumber, stats.team_number));
+				.leftJoin(team, eq(team.teamNumber, stats.team_number));
 		} catch (error) {
 			console.error("Error fetching team data:", error);
 			throw new ServerActionError("Failed to fetch team data");

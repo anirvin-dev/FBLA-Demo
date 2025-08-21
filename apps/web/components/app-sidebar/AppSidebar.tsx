@@ -24,7 +24,9 @@ import {
 	SidebarRail,
 } from "@repo/ui/components/sidebar";
 import {
+	Calendar,
 	ChartBar,
+	FoldHorizontal,
 	Grid2X2,
 	LogIn,
 	LogOut,
@@ -48,6 +50,11 @@ const navbarData = [
 		items: [
 			{ name: "Basic", icon: Grid2X2, href: "/analysis" },
 			{ name: "Advanced", icon: Sparkles, href: "/analysis/advanced" },
+			{
+				name: "Comparison",
+				icon: FoldHorizontal,
+				href: "/analysis/comparison",
+			},
 		],
 	},
 	{
@@ -60,6 +67,12 @@ const navbarData = [
 				name: "Scoutalytics",
 				icon: ChartBar,
 				href: "/admin/scoutalytics",
+			},
+
+			{
+				name: "Match Upload",
+				icon: Calendar,
+				href: "/admin/tools/match-upload",
 			},
 		],
 	},
