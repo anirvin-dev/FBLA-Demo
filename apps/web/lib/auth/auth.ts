@@ -34,7 +34,12 @@ export const discordProvider = Discord({
 	clientSecret: process.env.AUTH_DISCORD_SECRET,
 
 	profile: async (discordProfile, token) => {
-		if (!discordProfile.verified) {
+		// Only block if Discord explicitly says verified === false
+		if (
+			typeof discordProfile.verified === "boolean" &&
+			discordProfile.verified === false
+		) {
+			console.warn("Login rejected due to unverified email");
 			throw new AuthError(AuthErrors.DISCORD_UNVERIFIED);
 		}
 
@@ -63,6 +68,7 @@ export const providers = {
 };
 
 const authenticationProvider = NextAuth({
+	trustHost: true,
 	providers: [discordProvider],
 	pages: {
 		signIn: "/",
@@ -96,16 +102,22 @@ const authenticationProvider = NextAuth({
 				const guildNickname = profile?.guildNickname;
 
 				try {
-					if (!account?.access_token)
+					if (!account?.access_token) {
+						console.warn("Login rejected due to no access token");
 						throw new AuthErrorsCustomError(
 							AuthErrors.LOGIN_FAILED
 						);
-					if (!user.id || user.role === UserRole.BANISHED)
+					}
+					if (!user.id || user.role === UserRole.BANISHED) {
+						console.warn("Login rejected due to banished user");
 						throw new AuthErrorsCustomError(AuthErrors.BANISHED);
-					if (!guildNickname)
+					}
+					if (!guildNickname) {
+						console.warn("Login rejected due to no guild nickname");
 						throw new AuthErrorsCustomError(
 							AuthErrors.NO_GUILD_NICKNAME
 						);
+					}
 
 					if (
 						process.env.ADMIN_USERS?.split(",").includes(
