@@ -11,7 +11,7 @@ import {
 } from "@/lib/database/schema";
 import { DrizzleAdapter } from "@auth/drizzle-adapter";
 import { eq } from "drizzle-orm";
-import NextAuth, { AuthError } from "next-auth";
+import NextAuth from "next-auth";
 import { Adapter } from "next-auth/adapters";
 import Discord from "next-auth/providers/discord";
 
@@ -34,15 +34,6 @@ export const discordProvider = Discord({
 	clientSecret: process.env.AUTH_DISCORD_SECRET,
 
 	profile: async (discordProfile, token) => {
-		// Only block if Discord explicitly says verified === false
-		if (
-			typeof discordProfile.verified === "boolean" &&
-			discordProfile.verified === false
-		) {
-			console.warn("Login rejected due to unverified email");
-			throw new AuthError(AuthErrors.DISCORD_UNVERIFIED);
-		}
-
 		let guildNickname;
 
 		if (token.access_token) {
