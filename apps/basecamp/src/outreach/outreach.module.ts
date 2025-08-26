@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { OutreachService } from './outreach.service';
-import { SheetModule } from '../../sheet/sheet.module';
+import { SheetModule } from 'src/sheet/sheet.module';
 
 @Module({
   imports: [SheetModule],

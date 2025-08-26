@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { AttendanceService } from './attendance.service';
-import { SheetService } from '../../sheet/sheet.service';
+import { SheetService } from '../sheet/sheet.service';
 import { ConfigService } from '@nestjs/config';
 
 describe('AttendanceService', () => {

@@ -1,7 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Context, Options, SlashCommand, SlashCommandContext } from 'necord';
-import { AttendanceService } from '../data/attendance/attendance.service';
-import { OutreachService } from 'src/data/outreach/outreach.service';
+import { AttendanceService } from 'src/attendance/attendance.service';
+import { OutreachService } from 'src/outreach/outreach.service';
 import { ChatInputCommandInteraction } from 'discord.js';
 import { HandbookService } from 'src/handbook/handbook.service';
 import { HandbookQuestionDto } from 'src/handbook/handbook-question.dto';

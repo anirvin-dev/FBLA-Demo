@@ -3,8 +3,9 @@ import { NecordModule } from 'necord';
 import { ConfigService } from '@nestjs/config';
 import { IntentsBitField } from 'discord.js';
 import { BotCommands } from './bot.commands';
-import { DataModule } from '../data/data.module';
 import { HandbookModule } from '../handbook/handbook.module';
+import { AttendanceModule } from 'src/attendance/attendance.module';
+import { OutreachModule } from 'src/outreach/outreach.module';
 
 @Module({
   imports: [
@@ -23,8 +24,9 @@ import { HandbookModule } from '../handbook/handbook.module';
       },
       inject: [ConfigService],
     }),
-    DataModule,
     HandbookModule,
+    AttendanceModule,
+    OutreachModule,
   ],
   providers: [BotCommands],
 })

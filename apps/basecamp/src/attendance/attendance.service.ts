@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { SheetService } from '../../sheet/sheet.service';
+import { SheetService } from 'src/sheet/sheet.service';
 import z from 'zod';
 
 const AttendanceSchema = z.object({
@@ -275,7 +275,10 @@ export class AttendanceService {
       if (!allAttendance?.length) return [];
 
       // Map of discordId -> { userName, hourTotal }
-      const userData = new Map<string, { userName: string; hourTotal: number }>();
+      const userData = new Map<
+        string,
+        { userName: string; hourTotal: number }
+      >();
       // Map of discordId -> lastSignInTime
       const lastSignIn = new Map<string, Date>();
       const now = new Date();
@@ -317,10 +320,13 @@ export class AttendanceService {
 
       // Convert to array, sort, and limit results
       return Array.from(userData.values())
-        .filter(user => user.hourTotal > 0)
+        .filter((user) => user.hourTotal > 0)
         .sort((a, b) => b.hourTotal - a.hourTotal)
         .slice(0, limit)
-        .map(({ userName, hourTotal: totalHours }) => ({ userName, totalHours }));
+        .map(({ userName, hourTotal: totalHours }) => ({
+          userName,
+          totalHours,
+        }));
     } catch (error) {
       this.logger.error(`Error getting attendance leaderboard:`, error);
       return [];

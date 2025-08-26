@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { SheetService } from '../../sheet/sheet.service';
+import { SheetService } from 'src/sheet/sheet.service';
 import { ConfigService } from '@nestjs/config';
 import { z } from 'zod';
 
