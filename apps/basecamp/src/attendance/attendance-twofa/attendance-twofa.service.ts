@@ -23,6 +23,7 @@ export class AttendanceTwoFAService implements OnModuleDestroy {
     );
   }
 
+  /** Cleans up the cache on module destroy. */
   onModuleDestroy() {
     if (this.cleanupInterval) {
       clearInterval(this.cleanupInterval);
@@ -31,6 +32,7 @@ export class AttendanceTwoFAService implements OnModuleDestroy {
     this.codeCache.clear();
   }
 
+  /** Cleans up expired cache entries. */
   private cleanupExpiredCache() {
     const currentWindowId = this.getWindowId();
     let cleanedCount = 0;
@@ -47,15 +49,18 @@ export class AttendanceTwoFAService implements OnModuleDestroy {
     }
   }
 
+  /** Gets the window ID for the current time. */
   private getWindowId() {
     const windowStart = Math.floor(Date.now() / this.NEW_CODE_INTERVAL);
     return windowStart;
   }
 
+  /** Generates a 6-digit code for the current window. */
   private generateCode() {
     return 100000 + (randomBytes(3).readUInt16BE(0) % 900000);
   }
 
+  /** Checks if a code exists in the cache for the current window. If not, generates a new code and caches it. */
   public getOrCreateCode() {
     const windowId = this.getWindowId();
     const cachedCode = this.codeCache.get(windowId);
@@ -71,6 +76,7 @@ export class AttendanceTwoFAService implements OnModuleDestroy {
     return newCode;
   }
 
+  /** Verifies a code against the cache for the current window. */
   public verifyCode(code: number) {
     const windowId = this.getWindowId();
     const cachedCode = this.codeCache.get(windowId);
