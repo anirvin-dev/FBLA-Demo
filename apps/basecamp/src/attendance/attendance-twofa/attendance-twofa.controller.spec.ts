@@ -9,7 +9,9 @@ describe('AttendanceTwofaController', () => {
       controllers: [AttendanceTwofaController],
     }).compile();
 
-    controller = module.get<AttendanceTwofaController>(AttendanceTwofaController);
+    controller = module.get<AttendanceTwofaController>(
+      AttendanceTwofaController,
+    );
   });
 
   it('should be defined', () => {

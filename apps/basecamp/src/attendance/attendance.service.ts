@@ -1,7 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SheetService } from 'src/sheet/sheet.service';
-import z from 'zod';
+import { z } from 'zod';
+import { AttendanceTwoFAService } from './attendance-twofa/attendance-twofa.service';
 
 const AttendanceSchema = z.object({
   discordId: z.string(),
@@ -28,6 +29,7 @@ export class AttendanceService {
   constructor(
     private readonly sheetService: SheetService,
     private readonly configService: ConfigService,
+    private readonly attendanceTwofaService: AttendanceTwoFAService,
   ) {
     const attendanceSheetId = this.configService.get<string>(
       'ATTENDANCE_SPREADSHEET_ID',
@@ -40,6 +42,17 @@ export class AttendanceService {
     this.attendanceSheetId = attendanceSheetId;
   }
 
+  private getTeam(guildId: string) {
+    switch (guildId) {
+      case this.configService.get<string>('YETI_SERVER_ID'):
+        return 'YETI Robotics';
+      case this.configService.get<string>('DEV_GUILD_ID'):
+        return 'Dev';
+      default:
+        return '';
+    }
+  }
+
   private async performAttendanceOperation(
     discordId: string,
     discordName: string,
@@ -47,17 +60,7 @@ export class AttendanceService {
     operation: 'signIn' | 'signOut',
     date: Date = new Date(),
   ): Promise<boolean> {
-    let team = '';
-    switch (guildId) {
-      case this.configService.get<string>('YETI_SERVER_ID'):
-        team = 'YETI Robotics';
-        break;
-      case this.configService.get<string>('DEV_GUILD_ID'):
-        team = 'Dev';
-        break;
-    }
-
-    console.log(guildId, this.configService.get<string>('YETI_SERVER_ID'));
+    const team = this.getTeam(guildId);
 
     const attendance = AttendanceSchema.parse({
       discordId,
@@ -114,11 +117,30 @@ export class AttendanceService {
     });
   }
 
+  private validateAttendanceCode(code: number) {
+    const isCodeValid = this.attendanceTwofaService.verifyCode(code);
+
+    if (!isCodeValid) {
+      return {
+        success: false,
+        message: 'Invalid code.',
+      };
+    }
+
+    return null;
+  }
+
   public async signIn(
     discordId: string,
     guildId: string,
     discordName: string,
+    code: number,
   ): Promise<AttendanceOperationResult> {
+    const codeValidationError = this.validateAttendanceCode(code);
+    if (codeValidationError) {
+      return codeValidationError;
+    }
+
     const existingAttendance = await this.getAttendance(discordId);
 
     const lastOperation = existingAttendance.at(-1);
@@ -193,7 +215,13 @@ export class AttendanceService {
     discordId: string,
     guildId: string,
     discordName: string,
+    code: number,
   ): Promise<AttendanceOperationResult> {
+    const codeValidationError = this.validateAttendanceCode(code);
+    if (codeValidationError) {
+      return codeValidationError;
+    }
+
     const existingAttendance = await this.getAttendance(discordId);
 
     const lastOperation = existingAttendance.at(-1);
