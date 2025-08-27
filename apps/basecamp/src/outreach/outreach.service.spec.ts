@@ -1,6 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { OutreachService } from './outreach.service';
-import { SheetService } from '../../sheet/sheet.service';
+import { SheetService } from '../sheet/sheet.service';
 import { ConfigService } from '@nestjs/config';
 
 describe('OutreachService', () => {
