@@ -21,7 +21,14 @@ export class AttendanceTwoFAService {
 
   /** Generates a 4-digit code for the current window. */
   private generateCode() {
-    return 1000 + (randomBytes(2).readUInt16BE(0) % 9000);
+    // Unbiased 4-digit code generation (1000–9999)
+    while (true) {
+      const n = randomBytes(2).readUInt16BE(0);
+      // Find the largest multiple of 9000 less than 65536 (i.e., 63000)
+      if (n < 63000) {
+        return 1000 + (n % 9000);
+      }
+    }
   }
 
   /** Checks if a code exists in the cache for the current window. If not, generates a new code and caches it. */
