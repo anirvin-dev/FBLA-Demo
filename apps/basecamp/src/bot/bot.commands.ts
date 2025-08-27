@@ -1,10 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Context, Options, SlashCommand, SlashCommandContext } from 'necord';
-import { AttendanceService } from '../data/attendance/attendance.service';
-import { OutreachService } from 'src/data/outreach/outreach.service';
+import { AttendanceService } from 'src/attendance/attendance.service';
+import { OutreachService } from 'src/outreach/outreach.service';
 import { ChatInputCommandInteraction } from 'discord.js';
 import { HandbookService } from 'src/handbook/handbook.service';
 import { HandbookQuestionDto } from 'src/handbook/handbook-question.dto';
+import { AttendanceOperationCommandDto } from 'src/attendance/attendance.dto';
 
 const TOTAL_HOURS = 390;
 const MEMBER_REQUIRED_HOURS = TOTAL_HOURS * 0.75;
@@ -93,7 +94,10 @@ export class BotCommands {
     name: 'signin',
     description: 'Sign in to a YETI meeting at the zone',
   })
-  public async onSignIn(@Context() [interaction]: SlashCommandContext) {
+  public async onSignIn(
+    @Context() [interaction]: SlashCommandContext,
+    @Options() { code }: AttendanceOperationCommandDto,
+  ) {
     const nickname = await this.getNickname(interaction);
 
     if (!nickname) {
@@ -104,6 +108,7 @@ export class BotCommands {
       interaction.user.id,
       interaction.guild?.id || '',
       nickname,
+      code,
     );
 
     if (result.success) {
@@ -117,7 +122,10 @@ export class BotCommands {
     name: 'signout',
     description: 'Sign out of a YETI meeting at the zone',
   })
-  public async onSignOut(@Context() [interaction]: SlashCommandContext) {
+  public async onSignOut(
+    @Context() [interaction]: SlashCommandContext,
+    @Options() { code }: AttendanceOperationCommandDto,
+  ) {
     const nickname = await this.getNickname(interaction);
 
     if (!nickname) {
@@ -128,6 +136,7 @@ export class BotCommands {
       interaction.user.id,
       interaction.guildId || '',
       nickname,
+      code,
     );
 
     if (result.success) {

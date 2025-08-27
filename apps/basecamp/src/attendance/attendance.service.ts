@@ -1,7 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { SheetService } from '../../sheet/sheet.service';
-import z from 'zod';
+import { SheetService } from 'src/sheet/sheet.service';
+import { z } from 'zod';
+import { AttendanceTwoFAService } from './attendance-twofa/attendance-twofa.service';
 
 const AttendanceSchema = z.object({
   discordId: z.string(),
@@ -23,11 +24,13 @@ type AttendanceOperationResult =
 @Injectable()
 export class AttendanceService {
   private readonly attendanceSheetId: string;
+  private readonly twofaEnabled: boolean;
   private readonly logger = new Logger(AttendanceService.name);
 
   constructor(
     private readonly sheetService: SheetService,
     private readonly configService: ConfigService,
+    private readonly attendanceTwofaService: AttendanceTwoFAService,
   ) {
     const attendanceSheetId = this.configService.get<string>(
       'ATTENDANCE_SPREADSHEET_ID',
@@ -38,6 +41,21 @@ export class AttendanceService {
     }
 
     this.attendanceSheetId = attendanceSheetId;
+    this.twofaEnabled = this.configService.get<boolean>(
+      'ATTENDANCE_2FA_ENABLED',
+      false,
+    );
+  }
+
+  private getTeam(guildId: string) {
+    switch (guildId) {
+      case this.configService.get<string>('YETI_SERVER_ID'):
+        return 'YETI Robotics';
+      case this.configService.get<string>('DEV_GUILD_ID'):
+        return 'Dev';
+      default:
+        return '';
+    }
   }
 
   private async performAttendanceOperation(
@@ -47,17 +65,7 @@ export class AttendanceService {
     operation: 'signIn' | 'signOut',
     date: Date = new Date(),
   ): Promise<boolean> {
-    let team = '';
-    switch (guildId) {
-      case this.configService.get<string>('YETI_SERVER_ID'):
-        team = 'YETI Robotics';
-        break;
-      case this.configService.get<string>('DEV_GUILD_ID'):
-        team = 'Dev';
-        break;
-    }
-
-    console.log(guildId, this.configService.get<string>('YETI_SERVER_ID'));
+    const team = this.getTeam(guildId);
 
     const attendance = AttendanceSchema.parse({
       discordId,
@@ -114,11 +122,48 @@ export class AttendanceService {
     });
   }
 
+  private validateAttendanceCode(code?: number) {
+    this.logger.debug(`Validating code: ${code}`, {
+      twofaEnabled: this.twofaEnabled,
+    });
+    if (!this.twofaEnabled) {
+      return null;
+    }
+
+    if (typeof code !== 'number') {
+      return {
+        success: false,
+        message: 'A code is required to sign in/out.',
+      };
+    }
+
+    this.logger.debug(`Verifying code: ${code}`);
+
+    const isCodeValid = this.attendanceTwofaService.verifyCode(code);
+
+    if (!isCodeValid) {
+      return {
+        success: false,
+        message: 'Invalid code.',
+      };
+    }
+
+    return null;
+  }
+
   public async signIn(
     discordId: string,
     guildId: string,
     discordName: string,
+    code?: number,
   ): Promise<AttendanceOperationResult> {
+    this.logger.debug(`Signing in: ${discordId}`);
+
+    const codeValidationError = this.validateAttendanceCode(code);
+    if (codeValidationError) {
+      return codeValidationError;
+    }
+
     const existingAttendance = await this.getAttendance(discordId);
 
     const lastOperation = existingAttendance.at(-1);
@@ -193,7 +238,13 @@ export class AttendanceService {
     discordId: string,
     guildId: string,
     discordName: string,
+    code?: number,
   ): Promise<AttendanceOperationResult> {
+    const codeValidationError = this.validateAttendanceCode(code);
+    if (codeValidationError) {
+      return codeValidationError;
+    }
+
     const existingAttendance = await this.getAttendance(discordId);
 
     const lastOperation = existingAttendance.at(-1);
@@ -275,7 +326,10 @@ export class AttendanceService {
       if (!allAttendance?.length) return [];
 
       // Map of discordId -> { userName, hourTotal }
-      const userData = new Map<string, { userName: string; hourTotal: number }>();
+      const userData = new Map<
+        string,
+        { userName: string; hourTotal: number }
+      >();
       // Map of discordId -> lastSignInTime
       const lastSignIn = new Map<string, Date>();
       const now = new Date();
@@ -317,10 +371,13 @@ export class AttendanceService {
 
       // Convert to array, sort, and limit results
       return Array.from(userData.values())
-        .filter(user => user.hourTotal > 0)
+        .filter((user) => user.hourTotal > 0)
         .sort((a, b) => b.hourTotal - a.hourTotal)
         .slice(0, limit)
-        .map(({ userName, hourTotal: totalHours }) => ({ userName, totalHours }));
+        .map(({ userName, hourTotal: totalHours }) => ({
+          userName,
+          totalHours,
+        }));
     } catch (error) {
       this.logger.error(`Error getting attendance leaderboard:`, error);
       return [];
