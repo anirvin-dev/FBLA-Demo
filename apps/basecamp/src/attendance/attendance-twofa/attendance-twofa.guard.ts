@@ -8,7 +8,6 @@ export class AttendanceTwofaGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
     const authHeader = request.headers.authorization;
-    console.log(authHeader);
     const token =
       typeof authHeader === 'string' ? authHeader.split(' ')[1] : undefined;
     if (!token) {
@@ -16,10 +15,8 @@ export class AttendanceTwofaGuard implements CanActivate {
     }
     try {
       await this.jwtService.verifyAsync(token);
-      console.log('token is valid');
       return true;
     } catch {
-      console.log('token is invalid');
       return false;
     }
   }

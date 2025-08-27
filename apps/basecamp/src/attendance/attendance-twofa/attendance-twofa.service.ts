@@ -55,9 +55,9 @@ export class AttendanceTwoFAService implements OnModuleDestroy {
     return windowStart;
   }
 
-  /** Generates a 6-digit code for the current window. */
+  /** Generates a 4-digit code for the current window. */
   private generateCode() {
-    return 100000 + (randomBytes(3).readUInt16BE(0) % 900000);
+    return 1000 + (randomBytes(2).readUInt16BE(0) % 9000);
   }
 
   /** Checks if a code exists in the cache for the current window. If not, generates a new code and caches it. */
