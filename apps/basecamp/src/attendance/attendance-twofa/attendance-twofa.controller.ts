@@ -1,5 +1,5 @@
 import { Controller, Get, HttpStatus, Res, UseGuards } from '@nestjs/common';
-import { Response } from 'express';
+import type { Response } from 'express';
 import { AttendanceTwoFAService } from './attendance-twofa.service';
 import { AttendanceTwofaGuard } from './attendance-twofa.guard';
 
