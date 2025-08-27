@@ -5,9 +5,9 @@ export class AttendanceOperationCommandDto {
   @NumberOption({
     name: 'code',
     description: 'The code to sign in with',
-    required: true,
+    required: false,
   })
-  code: number;
+  code?: number;
 }
 
 export class AttendanceOperationDto {

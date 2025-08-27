@@ -24,6 +24,7 @@ type AttendanceOperationResult =
 @Injectable()
 export class AttendanceService {
   private readonly attendanceSheetId: string;
+  private readonly twofaEnabled: boolean;
   private readonly logger = new Logger(AttendanceService.name);
 
   constructor(
@@ -40,6 +41,10 @@ export class AttendanceService {
     }
 
     this.attendanceSheetId = attendanceSheetId;
+    this.twofaEnabled = this.configService.get<boolean>(
+      'ATTENDANCE_2FA_ENABLED',
+      false,
+    );
   }
 
   private getTeam(guildId: string) {
@@ -117,7 +122,23 @@ export class AttendanceService {
     });
   }
 
-  private validateAttendanceCode(code: number) {
+  private validateAttendanceCode(code?: number) {
+    this.logger.debug(`Validating code: ${code}`, {
+      twofaEnabled: this.twofaEnabled,
+    });
+    if (!this.twofaEnabled) {
+      return null;
+    }
+
+    if (typeof code !== 'number') {
+      return {
+        success: false,
+        message: 'A code is required to sign in/out.',
+      };
+    }
+
+    this.logger.debug(`Verifying code: ${code}`);
+
     const isCodeValid = this.attendanceTwofaService.verifyCode(code);
 
     if (!isCodeValid) {
@@ -134,8 +155,10 @@ export class AttendanceService {
     discordId: string,
     guildId: string,
     discordName: string,
-    code: number,
+    code?: number,
   ): Promise<AttendanceOperationResult> {
+    this.logger.debug(`Signing in: ${discordId}`);
+
     const codeValidationError = this.validateAttendanceCode(code);
     if (codeValidationError) {
       return codeValidationError;
@@ -215,7 +238,7 @@ export class AttendanceService {
     discordId: string,
     guildId: string,
     discordName: string,
-    code: number,
+    code?: number,
   ): Promise<AttendanceOperationResult> {
     const codeValidationError = this.validateAttendanceCode(code);
     if (codeValidationError) {
