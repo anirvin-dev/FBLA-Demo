@@ -17,6 +17,11 @@ export async function GET() {
 	});
 
 	if (!response.ok) {
+		console.error(
+			"Basecamp API returned an error",
+			response.status,
+			await response.text()
+		);
 		return new Response("Failed to fetch code", { status: 500 });
 	}
 

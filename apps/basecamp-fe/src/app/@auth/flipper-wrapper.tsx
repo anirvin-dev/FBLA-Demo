@@ -17,6 +17,11 @@ export async function FlipperWrapper() {
 	});
 
 	if (!response.ok) {
+		console.error(
+			"Basecamp API returned an error",
+			response.status,
+			await response.text()
+		);
 		return null;
 	}
 
