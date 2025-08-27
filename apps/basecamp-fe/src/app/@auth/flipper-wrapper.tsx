@@ -12,7 +12,7 @@ export async function FlipperWrapper() {
 	const response = await fetch(new URL("/2fa", process.env.BASECAMP_URL), {
 		method: "GET",
 		headers: {
-			Authorization: `Bearer ${token}`,
+			Authorization: `Bearer ${process.env.BASECAMP_TOKEN}`,
 		},
 	});
 

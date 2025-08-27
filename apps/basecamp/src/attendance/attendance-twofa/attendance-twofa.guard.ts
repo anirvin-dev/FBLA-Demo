@@ -1,0 +1,26 @@
+import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import type { Request } from 'express';
+
+@Injectable()
+export class AttendanceTwofaGuard implements CanActivate {
+  constructor(private readonly jwtService: JwtService) {}
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest<Request>();
+    const authHeader = request.headers.authorization;
+    console.log(authHeader);
+    const token =
+      typeof authHeader === 'string' ? authHeader.split(' ')[1] : undefined;
+    if (!token) {
+      return false;
+    }
+    try {
+      await this.jwtService.verifyAsync(token);
+      console.log('token is valid');
+      return true;
+    } catch {
+      console.log('token is invalid');
+      return false;
+    }
+  }
+}

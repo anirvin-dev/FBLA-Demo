@@ -1,8 +1,10 @@
-import { Controller, Get, HttpStatus, Res } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Res, UseGuards } from '@nestjs/common';
 import { Response } from 'express';
 import { AttendanceTwoFAService } from './attendance-twofa.service';
+import { AttendanceTwofaGuard } from './attendance-twofa.guard';
 
 @Controller('2fa')
+@UseGuards(AttendanceTwofaGuard)
 export class AttendanceTwofaController {
   constructor(
     private readonly attendanceTwofaService: AttendanceTwoFAService,
