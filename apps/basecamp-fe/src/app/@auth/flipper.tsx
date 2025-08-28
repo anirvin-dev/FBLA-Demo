@@ -2,7 +2,6 @@
 
 import NumberFlow, { continuous, type Format } from "@number-flow/react";
 import { useCallback, useEffect, useRef, useState } from "react";
-import confetti from "canvas-confetti";
 
 const format: Format = {
 	notation: "standard",
@@ -50,33 +49,6 @@ export function CodeFlipper({ initialCode }: { initialCode: string }) {
 
 	const code = usePollingCode(initialCode, fetchCode, 30 * 1000);
 
-	// Fire confetti when the code equals 3506. Ensure it only fires once per match.
-	const hasFiredConfettiRef = useRef<boolean>(false);
-
-	useEffect(() => {
-		if (!code) return;
-		const paddedCode = code.toString().padStart(4, "0");
-		if (paddedCode === "3506" && !hasFiredConfettiRef.current) {
-			hasFiredConfettiRef.current = true;
-			const durationMs = 10000;
-			const endTime = Date.now() + durationMs;
-			(function frame() {
-				// Create a light, continuous rain from the top for the duration
-				confetti({
-					particleCount: 4,
-					spread: 160,
-					startVelocity: 25,
-					gravity: 0.5,
-					colors: ["#333333", "#54B6E5"],
-					origin: { x: Math.random(), y: 0 },
-				});
-				if (Date.now() < endTime) requestAnimationFrame(frame);
-			})();
-		} else if (paddedCode !== "3506") {
-			hasFiredConfettiRef.current = false;
-		}
-	}, [code]);
-
 	const [secondsLeft, setSecondsLeft] = useState<number>(() => {
 		const ms = 30_000 - (Date.now() % 30_000);
 		return Math.ceil(ms / 1000);
@@ -98,9 +70,7 @@ export function CodeFlipper({ initialCode }: { initialCode: string }) {
 
 	return (
 		<div className="flex flex-col items-center gap-2">
-			<div
-				className={`flex gap-2 text-6xl ${hasFiredConfettiRef.current && "text-yeti-500"}`}
-			>
+			<div className="flex gap-2 text-6xl">
 				{padded.split("").map((digit, index) => (
 					<div
 						key={index}
