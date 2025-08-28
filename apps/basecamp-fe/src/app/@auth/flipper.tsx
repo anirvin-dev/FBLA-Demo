@@ -22,17 +22,25 @@ function usePollingCode(
 	);
 
 	useEffect(() => {
+		let isMounted = true;
+
 		// align first refresh to the next interval boundary
 		const msToNextBoundary = intervalMs - (Date.now() % intervalMs);
 		timeoutRef.current = setTimeout(async () => {
+			if (!isMounted) return;
+
 			const next = await fetcher();
+			if (!isMounted) return;
+
 			setCode(next);
 			intervalRef.current = setInterval(() => {
+				if (!isMounted) return;
 				fetcher().then(setCode);
 			}, intervalMs);
 		}, msToNextBoundary);
 
 		return () => {
+			isMounted = false;
 			if (timeoutRef.current) clearTimeout(timeoutRef.current);
 			if (intervalRef.current) clearInterval(intervalRef.current);
 		};
