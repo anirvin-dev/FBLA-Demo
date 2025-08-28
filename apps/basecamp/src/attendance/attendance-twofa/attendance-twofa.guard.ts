@@ -8,6 +8,7 @@ export class AttendanceTwofaGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<Request>();
     const authHeader = request.headers.authorization;
+    console.log(authHeader);
     const token =
       typeof authHeader === 'string' ? authHeader.split(' ')[1] : undefined;
     if (!token) {
