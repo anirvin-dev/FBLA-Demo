@@ -332,7 +332,6 @@ export class AttendanceService {
       >();
       // Map of discordId -> lastSignInTime
       const lastSignIn = new Map<string, Date>();
-      const now = new Date();
 
       // Process each record (skip header row)
       for (let i = 1; i < allAttendance.length; i++) {
@@ -360,15 +359,6 @@ export class AttendanceService {
         }
       }
 
-      // Handle users still signed in
-      lastSignIn.forEach((signInTime, discordId) => {
-        const user = userData.get(discordId);
-        if (user) {
-          const hours = (now.getTime() - signInTime.getTime()) / 3.6e6;
-          if (hours > 0) user.hourTotal += hours;
-        }
-      });
-
       // Convert to array, sort, and limit results
       return Array.from(userData.values())
         .filter((user) => user.hourTotal > 0)
@@ -376,7 +366,7 @@ export class AttendanceService {
         .slice(0, limit)
         .map(({ userName, hourTotal: totalHours }) => ({
           userName,
-          totalHours,
+          totalHours: parseFloat(totalHours.toFixed(2)),
         }));
     } catch (error) {
       this.logger.error(`Error getting attendance leaderboard:`, error);
