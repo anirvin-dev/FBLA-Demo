@@ -52,7 +52,6 @@ export class AttendanceTwoFAService {
   public verifyCode(code: number) {
     const windowId = this.getWindowId();
     const [current, previous] = this.slots;
-    console.log(current, previous);
     return (
       (current && current.windowId === windowId && current.code === code) ||
       (previous && previous.windowId === windowId - 1 && previous.code === code)

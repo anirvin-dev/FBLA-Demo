@@ -7,9 +7,6 @@ export default async function AuthPage() {
 	const cookieStore = await cookies();
 	const token = cookieStore.get("toofaToken")?.value;
 
-	console.log(token);
-	console.log(await validateToken(token ?? ""));
-
 	if (!token || !(await validateToken(token))) {
 		return null;
 	}

@@ -7,7 +7,6 @@ export async function FlipperWrapper() {
 	const token = cookieStore.get("toofaToken")?.value;
 
 	if (!token || !(await validateToken(token))) {
-		console.log("token is invalid", token);
 		return null;
 	}
 
