@@ -1,18 +1,19 @@
 import { cookies } from "next/headers";
-import { verifyJWT } from "@/auth/utils";
 import { CodeFlipper } from "./flipper";
+import { validateToken } from "@/lib/auth";
 
 export async function FlipperWrapper() {
 	const cookieStore = await cookies();
-	const token = cookieStore.get("authToken")?.value;
+	const token = cookieStore.get("toofaToken")?.value;
 
-	if (!token || !(await verifyJWT(token))) {
+	if (!token || !(await validateToken(token))) {
 		return null;
 	}
+
 	const response = await fetch(new URL("/2fa", process.env.BASECAMP_URL), {
 		method: "GET",
 		headers: {
-			Authorization: `Bearer ${process.env.BASECAMP_TOKEN}`,
+			Authorization: `Bearer ${token}`,
 		},
 	});
 

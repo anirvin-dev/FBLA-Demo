@@ -1,33 +1,28 @@
-import { verifyJWT } from "@/auth/utils";
 import { cookies } from "next/headers";
+import { NextResponse } from "next/server";
 
 export async function GET() {
 	const cookieStore = await cookies();
-	const token = cookieStore.get("authToken")?.value;
+	const token = cookieStore.get("toofaToken")?.value;
 
-	if (!token || !(await verifyJWT(token))) {
+	if (!token) {
 		return new Response("Unauthorized", { status: 401 });
 	}
 
-	const response = await fetch(new URL("/2fa", process.env.BASECAMP_URL), {
-		method: "GET",
+	const res = await fetch(new URL("/2fa", process.env.BASECAMP_URL), {
 		headers: {
-			Authorization: `Bearer ${process.env.BASECAMP_TOKEN}`,
+			Authorization: `Bearer ${token}`,
 		},
 	});
 
-	if (!response.ok) {
-		console.error(
-			"Basecamp API returned an error",
-			response.status,
-			await response.text()
+	if (!res.ok) {
+		return NextResponse.json(
+			{ error: "Failed to fetch code" },
+			{ status: res.status }
 		);
-		return new Response("Failed to fetch code", { status: 500 });
 	}
 
-	const { code } = await response.json();
+	const data = await res.json();
 
-	return new Response(code);
+	return NextResponse.json(data.code);
 }
-
-export const dynamic = "force-dynamic";
