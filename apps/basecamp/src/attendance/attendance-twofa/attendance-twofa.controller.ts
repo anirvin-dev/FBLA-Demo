@@ -40,10 +40,6 @@ export class AttendanceTwofaController {
       undefined,
     );
 
-    console.log(password, expectedPassword);
-
-    console.log(password, expectedPassword, password === expectedPassword);
-
     if (!password || password !== expectedPassword) {
       throw new UnauthorizedException('Invalid password');
     }
@@ -61,7 +57,6 @@ export class AttendanceTwofaController {
     @Res() res: Response,
   ) {
     try {
-      console.log(token);
       this.jwtService.verify(token);
     } catch (error) {
       console.error(error);
