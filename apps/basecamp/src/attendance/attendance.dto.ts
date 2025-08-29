@@ -1,11 +1,20 @@
 import { IsString, IsNotEmpty, IsNumber } from 'class-validator';
 import { NumberOption } from 'necord';
 
-export class AttendanceOperationCommandDto {
+export class AttendanceSignInDto {
   @NumberOption({
     name: 'code',
     description: 'The code to sign in with',
-    required: false,
+    required: true,
+  })
+  code?: number;
+}
+
+export class AttendanceSignOutDto {
+  @NumberOption({
+    name: 'code',
+    description: 'The code to sign out with',
+    required: true,
   })
   code?: number;
 }

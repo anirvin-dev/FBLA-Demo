@@ -78,29 +78,29 @@ export function CodeFlipper({ initialCode }: { initialCode: string }) {
 
 	return (
 		<div className="flex flex-col items-center gap-2">
-			<div className="flex gap-2 text-6xl">
+			<div className="flex gap-2 text-[128px]">
 				{padded.split("").map((digit, index) => (
 					<div
 						key={index}
-						className="flex flex-col items-center text-6xl"
+						className="flex flex-col items-center text-9xl"
 					>
 						<NumberFlow
 							style={
 								{
-									"--number-flow-char-height": "60px",
+									"--number-flow-char-height": "128px",
 								} as React.CSSProperties
 							}
 							willChange
 							plugins={[continuous]}
 							value={parseInt(digit, 10)}
 							format={format}
-							className="~text-4xl/6xl"
+							className="text-[128px]"
 						/>
 					</div>
 				))}
 			</div>
 			<div
-				className={`text-muted-foreground text-sm ${secondsLeft < 10 && "text-red-600"}`}
+				className={`text-muted-foreground text-xl ${secondsLeft < 10 && "text-red-600"}`}
 			>
 				Refreshes in {secondsLeft}s
 			</div>

@@ -5,7 +5,10 @@ import { OutreachService } from 'src/outreach/outreach.service';
 import { ChatInputCommandInteraction } from 'discord.js';
 import { HandbookService } from 'src/handbook/handbook.service';
 import { HandbookQuestionDto } from 'src/handbook/handbook-question.dto';
-import { AttendanceOperationCommandDto } from 'src/attendance/attendance.dto';
+import {
+  AttendanceSignInDto,
+  AttendanceSignOutDto,
+} from 'src/attendance/attendance.dto';
 
 const TOTAL_HOURS = 390;
 const MEMBER_REQUIRED_HOURS = TOTAL_HOURS * 0.75;
@@ -96,7 +99,7 @@ export class BotCommands {
   })
   public async onSignIn(
     @Context() [interaction]: SlashCommandContext,
-    @Options() { code }: AttendanceOperationCommandDto,
+    @Options() { code }: AttendanceSignInDto,
   ) {
     const nickname = await this.getNickname(interaction);
 
@@ -124,7 +127,7 @@ export class BotCommands {
   })
   public async onSignOut(
     @Context() [interaction]: SlashCommandContext,
-    @Options() { code }: AttendanceOperationCommandDto,
+    @Options() { code }: AttendanceSignOutDto,
   ) {
     const nickname = await this.getNickname(interaction);
 
