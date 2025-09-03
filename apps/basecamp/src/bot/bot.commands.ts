@@ -90,7 +90,10 @@ export class BotCommands {
     dmPermission: true,
   })
   public async onPing(@Context() [interaction]: SlashCommandContext) {
-    return interaction.reply(`Pong! ${interaction.client.ws.ping}ms`);
+    return interaction.reply({
+      content: `Pong! ${interaction.client.ws.ping}ms`,
+      ephemeral: true,
+    });
   }
 
   @SlashCommand({
@@ -104,7 +107,10 @@ export class BotCommands {
     const nickname = await this.getNickname(interaction);
 
     if (!nickname) {
-      return interaction.reply('You must have a nickname to sign in');
+      return interaction.reply({
+        content: 'You must have a nickname to sign in',
+        ephemeral: true,
+      });
     }
 
     const result = await this.attendanceService.signIn(
@@ -115,9 +121,15 @@ export class BotCommands {
     );
 
     if (result.success) {
-      return interaction.reply('Signed in successfully');
+      return interaction.reply({
+        content: 'Signed in successfully',
+        ephemeral: true,
+      });
     } else {
-      return interaction.reply(result.message);
+      return interaction.reply({
+        content: result.message,
+        ephemeral: true,
+      });
     }
   }
 
@@ -132,7 +144,10 @@ export class BotCommands {
     const nickname = await this.getNickname(interaction);
 
     if (!nickname) {
-      return interaction.reply('You must have a nickname to sign out');
+      return interaction.reply({
+        content: 'You must have a nickname to sign out',
+        ephemeral: true,
+      });
     }
 
     const result = await this.attendanceService.signOut(
@@ -143,9 +158,15 @@ export class BotCommands {
     );
 
     if (result.success) {
-      return interaction.reply('Signed out successfully');
+      return interaction.reply({
+        content: 'Signed out successfully',
+        ephemeral: true,
+      });
     } else {
-      return interaction.reply(result.message);
+      return interaction.reply({
+        content: result.message,
+        ephemeral: true,
+      });
     }
   }
 
