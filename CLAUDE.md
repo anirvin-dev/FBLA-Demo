@@ -7,10 +7,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 This is a pnpm monorepo using Turbo for task orchestration. Always use `pnpm` as the package manager.
 
 ### Core Commands
+
 - `pnpm install` - Install dependencies for entire project
 - `pnpm dev` - Start all applications in development mode
 - `pnpm dev:scouting` - Start only the web app (`@app/web`)
-- `pnpm dev:attendance` - Start only the attendance app (`@app/plus`) 
+- `pnpm dev:attendance` - Start only the attendance app (`@app/plus`)
 - `pnpm build` - Build all applications
 - `pnpm test` - Run tests across all packages
 - `pnpm lint` - Run linting across all packages
@@ -20,18 +21,22 @@ This is a pnpm monorepo using Turbo for task orchestration. Always use `pnpm` as
 - `pnpm db:start` - Start local database (Docker required)
 
 ### Application-Specific Commands
+
 For the web app (`apps/web`):
+
 - `pnpm dev --filter=@app/web` - Start web app only
 - `pnpm build --filter=@app/web` - Build web app only
 - `pnpm lint --filter=@app/web` - Lint web app only
 
 For basecamp (`apps/basecamp`):
+
 - `pnpm dev --filter=basecamp` - Start NestJS Discord bot
 - `pnpm test --filter=basecamp` - Run basecamp tests
 
 ## Architecture Overview
 
 ### Monorepo Structure
+
 - `apps/web/` - Next.js 15 scouting application with React 19
 - `apps/basecamp/` - NestJS Discord bot for team management
 - `packages/ui/` - Shared React component library using shadcn/ui
@@ -41,6 +46,7 @@ For basecamp (`apps/basecamp`):
 - `packages/typescript-config/` - Shared TypeScript configurations
 
 ### Technology Stack
+
 - **Frontend**: Next.js 15, React 19, Tailwind CSS 4, shadcn/ui components
 - **Backend**: NestJS (Discord bot), Next.js API routes
 - **Database**: PostgreSQL with Drizzle ORM
@@ -51,43 +57,52 @@ For basecamp (`apps/basecamp`):
 ### Key Architecture Patterns
 
 #### Database Schema (`apps/web/lib/database/schema.ts`)
+
 - User roles: admin, user, guest, banished
 - NextAuth.js tables for authentication
 - Scouting forms and match data schemas
 - Uses Drizzle ORM with PostgreSQL
 
 #### Authentication (`apps/web/lib/auth/`)
+
 - Discord OAuth integration via NextAuth.js v5
 - Role-based access control with UserRole enum
 - Guild nickname integration for team member identification
 
 #### Scouting System (`apps/web/app/(sidebar)/scout/`)
+
 - Multi-step form system for robot performance data collection
 - Form steps: Match Detail, Auto Period, Teleop Period, Endgame, Miscellaneous
 - Real-time form validation with react-hook-form and Zod
 - Progress tracking and navigation between form steps
 
 #### Data Analysis (`apps/web/app/(sidebar)/analysis/`)
+
 - Team performance analytics
 - Tournament data visualization
 - Advanced data tables with sorting and filtering
 
 ### Environment Configuration
+
 Two `.env.local` files required:
+
 - `apps/web/.env.local` - Next.js frontend config (copy from `.env.example`)
 - `packages/database/.env.local` - Database config (copy from `.env.example`)
 
 ### Database Setup
+
 - Docker Desktop recommended for automatic database startup
 - Manual PostgreSQL setup supported via `DATABASE_URL` configuration
 - Database starts automatically with `pnpm dev` when Docker is available
 
 ### Testing Strategy
+
 - Jest for unit testing (basecamp app includes comprehensive test setup)
 - Uses `--passWithNoTests` flag to prevent failures on missing tests
 - E2E testing configuration available in basecamp app
 
 ### Key External Integrations
+
 - **The Blue Alliance API**: Team and match data via yeti-blue-sdk
 - **Discord**: OAuth authentication and bot integration
 - **Google Sheets**: Data export and attendance tracking (basecamp)
@@ -99,23 +114,26 @@ For detailed information about the Basecamp Discord bot architecture and code fl
 
 ### Key Documentation Resources
 
-- **Necord Documentation**: https://necord.org/ - Official NestJS integration for Discord.js
-- **Discord.js Guide**: https://discordjs.guide/ - Comprehensive Discord.js documentation
-- **Discord.js Response Methods**: https://discordjs.guide/slash-commands/response-methods - Interaction responses and ephemeral messages
-- **NestJS Documentation**: https://docs.nestjs.com/ - Progressive Node.js framework
+- **Necord Documentation**: <https://necord.org/> - Official NestJS integration for Discord.js
+- **Discord.js Guide**: <https://discordjs.guide/> - Comprehensive Discord.js documentation
+- **Discord.js Response Methods**: <https://discordjs.guide/slash-commands/response-methods> - Interaction responses and ephemeral messages
+- **NestJS Documentation**: <https://docs.nestjs.com/> - Progressive Node.js framework
 
 ### Important Patterns for Discord Bot Development
 
 #### Ephemeral Responses
+
 Discord.js supports ephemeral responses that are only visible to the command executor:
+
 ```typescript
 return interaction.reply({
   content: 'Your response message',
-  ephemeral: true
+  flags: [MessageFlags.Ephemeral],
 });
 ```
 
 #### Slash Command Structure (Necord)
+
 ```typescript
 @SlashCommand({
   name: 'command-name',
@@ -128,6 +146,7 @@ public async onCommandName(@Context() [interaction]: SlashCommandContext) {
 ```
 
 #### Key Constraints
+
 - Must respond to interactions within 3 seconds
 - Cannot change ephemeral state after initial response
 - Interaction tokens valid for 15 minutes after initial response
@@ -164,12 +183,14 @@ AppModule
 ### Core Components
 
 #### BotModule (`src/bot/bot.module.ts`)
+
 - Configures NecordModule with Discord token and intents
 - Uses `IntentsBitField.Flags.Guilds` for basic guild access
 - Supports development guild configuration via `DEV_GUILD_ID`
 - Provides BotCommands service for slash command handling
 
 #### BotCommands (`src/bot/bot.commands.ts`)
+
 - Central service containing all slash command handlers
 - Uses Necord decorators: `@SlashCommand`, `@Context`, `@Options`
 - Implements rate limiting for handbook commands
@@ -178,6 +199,7 @@ AppModule
 ### Slash Command Architecture
 
 #### Command Registration Pattern
+
 ```typescript
 @SlashCommand({
   name: 'command-name',
@@ -190,6 +212,7 @@ public async onCommandName(@Context() [interaction]: SlashCommandContext) {
 ```
 
 #### Available Commands
+
 - `/ping` - Bot latency check (ephemeral)
 - `/signin` - Attendance sign-in (ephemeral)
 - `/signout` - Attendance sign-out (ephemeral)
@@ -201,6 +224,7 @@ public async onCommandName(@Context() [interaction]: SlashCommandContext) {
 ### Data Flow
 
 #### Interaction Lifecycle
+
 1. Discord user executes slash command
 2. Discord API sends interaction to bot
 3. Necord routes interaction to appropriate `@SlashCommand` handler
@@ -208,6 +232,7 @@ public async onCommandName(@Context() [interaction]: SlashCommandContext) {
 5. Response sent via `interaction.reply()`
 
 #### Service Integration
+
 - **AttendanceService**: Google Sheets integration for meeting attendance tracking
 - **OutreachService**: Outreach hours tracking and leaderboard functionality
 - **HandbookService**: AI-powered Q&A using Google GenAI
@@ -216,24 +241,28 @@ public async onCommandName(@Context() [interaction]: SlashCommandContext) {
 ### Configuration Management
 
 #### Environment Variables
+
 - `DISCORD_TOKEN`: Bot authentication token
 - `DEV_GUILD_ID`: Development server ID for testing
 - `ATTENDANCE_SPREADSHEET_ID`: Google Sheets ID for attendance data
 - Additional Google API and AI service credentials
 
 #### NestJS Configuration
+
 - Uses `ConfigModule.forRoot({ isGlobal: true })` for environment management
 - Services inject `ConfigService` for runtime configuration access
 
 ### Error Handling and Logging
 
 #### Patterns
+
 - Injectable Logger service used throughout components
 - Try-catch blocks around service operations
 - User-friendly error messages for interaction responses
 - Detailed error logging for debugging
 
 #### Rate Limiting
+
 - Global rate limiting implemented for handbook commands
 - Request tracking with cleanup intervals
 - Configurable limits and time windows
@@ -241,11 +270,13 @@ public async onCommandName(@Context() [interaction]: SlashCommandContext) {
 ### Integration Patterns
 
 #### Discord.js Context Handling
+
 - `@Context()` decorator extracts interaction context
 - Type-safe SlashCommandContext for interaction handling
 - Guild member resolution for nickname requirements
 
 #### NestJS Dependency Injection
+
 - Constructor injection for service dependencies
 - Proper service scoping and lifecycle management
 - Module-based organization with clear boundaries
@@ -261,23 +292,26 @@ public async onCommandName(@Context() [interaction]: SlashCommandContext) {
 ## Command Response Patterns
 
 ### Standard Responses
+
 ```typescript
 return interaction.reply('Response message');
 ```
 
 ### Ephemeral Responses (Private)
+
 ```typescript
 return interaction.reply({
   content: 'Response message',
-  ephemeral: true
+  flags: [MessageFlags.Ephemeral],
 });
 ```
 
 ### Error Responses
+
 ```typescript
 return interaction.reply({
   content: 'Error message',
-  ephemeral: true
+  flags: [MessageFlags.Ephemeral],
 });
 ```
 

@@ -109,7 +109,7 @@ export class BotCommands {
     if (!nickname) {
       return interaction.reply({
         content: 'You must have a nickname to sign in',
-        ephemeral: true,
+        flags: [MessageFlags.Ephemeral],
       });
     }
 
@@ -151,7 +151,7 @@ export class BotCommands {
     if (!nickname) {
       return interaction.reply({
         content: 'You must have a nickname to sign out',
-        ephemeral: true,
+        flags: [MessageFlags.Ephemeral],
       });
     }
 
@@ -170,12 +170,12 @@ export class BotCommands {
       }
       return interaction.reply({
         content: 'Signed out successfully',
-        ephemeral: true,
+        flags: [MessageFlags.Ephemeral],
       });
     } else {
       return interaction.reply({
         content: result.message,
-        ephemeral: true,
+        flags: [MessageFlags.Ephemeral],
       });
     }
   }
@@ -381,7 +381,7 @@ export class BotCommands {
           '{time}',
           globalLimit.waitTime!.toString(),
         ),
-        ephemeral: true,
+        flags: [MessageFlags.Ephemeral],
       });
     }
 
