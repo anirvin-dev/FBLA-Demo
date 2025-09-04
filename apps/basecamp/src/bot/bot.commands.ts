@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { Context, Options, SlashCommand, SlashCommandContext } from 'necord';
 import { AttendanceService } from 'src/attendance/attendance.service';
 import { OutreachService } from 'src/outreach/outreach.service';
-import { ChatInputCommandInteraction } from 'discord.js';
+import { ChatInputCommandInteraction, MessageFlags } from 'discord.js';
 import { HandbookService } from 'src/handbook/handbook.service';
 import { HandbookQuestionDto } from 'src/handbook/handbook-question.dto';
 import {
@@ -92,7 +92,7 @@ export class BotCommands {
   public async onPing(@Context() [interaction]: SlashCommandContext) {
     return interaction.reply({
       content: `Pong! ${interaction.client.ws.ping}ms`,
-      ephemeral: true,
+      flags: [MessageFlags.Ephemeral],
     });
   }
 
@@ -128,12 +128,12 @@ export class BotCommands {
       }
       return interaction.reply({
         content: 'Signed in successfully',
-        ephemeral: true,
+        flags: [MessageFlags.Ephemeral],
       });
     } else {
       return interaction.reply({
         content: result.message,
-        ephemeral: true,
+        flags: [MessageFlags.Ephemeral],
       });
     }
   }
