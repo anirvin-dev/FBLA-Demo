@@ -123,9 +123,6 @@ export class AttendanceService {
   }
 
   private validateAttendanceCode(code?: number) {
-    this.logger.debug(`Validating code: ${code}`, {
-      twofaEnabled: this.twofaEnabled,
-    });
     if (!this.twofaEnabled) {
       return null;
     }
@@ -136,8 +133,6 @@ export class AttendanceService {
         message: 'A code is required to sign in/out.',
       };
     }
-
-    this.logger.debug(`Verifying code: ${code}`);
 
     const isCodeValid = this.attendanceTwofaService.verifyCode(code);
 
@@ -157,8 +152,6 @@ export class AttendanceService {
     discordName: string,
     code?: number,
   ): Promise<AttendanceOperationResult> {
-    this.logger.debug(`Signing in: ${discordId}`);
-
     const codeValidationError = this.validateAttendanceCode(code);
     if (codeValidationError) {
       return codeValidationError;

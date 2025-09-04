@@ -121,6 +121,11 @@ export class BotCommands {
     );
 
     if (result.success) {
+      if (interaction.channel?.isSendable()) {
+        await interaction.channel.send(
+          `<@${interaction.user.id}> has signed in.`,
+        );
+      }
       return interaction.reply({
         content: 'Signed in successfully',
         ephemeral: true,
@@ -158,6 +163,11 @@ export class BotCommands {
     );
 
     if (result.success) {
+      if (interaction.channel?.isSendable()) {
+        await interaction.channel.send(
+          `<@${interaction.user.id}> has signed out.`,
+        );
+      }
       return interaction.reply({
         content: 'Signed out successfully',
         ephemeral: true,
