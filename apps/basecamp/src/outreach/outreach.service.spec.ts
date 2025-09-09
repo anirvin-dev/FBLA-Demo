@@ -225,4 +225,52 @@ describe('OutreachService', () => {
       ]);
     });
   });
+
+  describe('getTotalTeamOutreachHours', () => {
+    it('should return total hours across all team members', async () => {
+      sheetService.getSheetValues.mockResolvedValue(mockSheetData);
+
+      const result = await service.getTotalTeamOutreachHours();
+
+      // John Doe: 10 + 5 = 15, Jane Smith: 15 + 8 = 23, Bob Johnson: 20, Alice Brown: 12
+      // Total: 15 + 23 + 20 + 12 = 70
+      expect(result).toBe(70);
+    });
+
+    it('should return 0 when no data exists', async () => {
+      sheetService.getSheetValues.mockResolvedValue(null);
+
+      const result = await service.getTotalTeamOutreachHours();
+
+      expect(result).toBe(0);
+    });
+
+    it('should return 0 when sheet data is empty', async () => {
+      sheetService.getSheetValues.mockResolvedValue([]);
+
+      const result = await service.getTotalTeamOutreachHours();
+
+      expect(result).toBe(0);
+    });
+
+    it('should return 0 when sheet has only headers', async () => {
+      sheetService.getSheetValues.mockResolvedValue([
+        ['Date', 'Name', 'Event', 'Type', 'Hours'],
+      ]);
+
+      const result = await service.getTotalTeamOutreachHours();
+
+      expect(result).toBe(0);
+    });
+
+    it('should handle API errors and return 0', async () => {
+      sheetService.getSheetValues.mockRejectedValue(
+        new Error('Sheet API error'),
+      );
+
+      const result = await service.getTotalTeamOutreachHours();
+
+      expect(result).toBe(0);
+    });
+  });
 });
