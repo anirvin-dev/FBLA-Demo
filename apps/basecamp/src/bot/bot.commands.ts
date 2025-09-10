@@ -274,13 +274,16 @@ export class BotCommands {
   public async onOutreachLeaderboard(
     @Context() [interaction]: SlashCommandContext,
   ) {
-    const leaderboard = await this.outreachService.getTopMembersByHours(5);
+    const [leaderboard, totalTeamHours] = await Promise.all([
+      this.outreachService.getTopMembersByHours(5),
+      this.outreachService.getTotalTeamOutreachHours(),
+    ]);
 
     if (!leaderboard || leaderboard.length === 0) {
       return interaction.reply('No outreach data found');
     }
 
-    let leaderboardString = ':trophy: **Outreach Leaderboard** :trophy:\n\n';
+    let leaderboardString = `:trophy: **Outreach Leaderboard** :trophy:\n:chart_with_upwards_trend: **Team Total: ${totalTeamHours} hours** :chart_with_upwards_trend:\n\n`;
 
     leaderboard.forEach((entry, index) => {
       const rank = index + 1;

@@ -58,7 +58,7 @@ export class OutreachService {
     }
   }
 
-  async getTopMembersByHours(limit: number = 5) {
+  private async parseAllOutreachData() {
     try {
       const sheet = await this.sheetService.getSheetValues(
         this.outreachSheetId,
@@ -79,6 +79,38 @@ export class OutreachService {
           hours: Number(row[4]),
         }),
       );
+
+      return outreachData;
+    } catch (error) {
+      console.error('Error parsing outreach data:', error);
+      return [];
+    }
+  }
+
+  async getTotalTeamOutreachHours() {
+    try {
+      const outreachData = await this.parseAllOutreachData();
+
+      // Sum all hours across all users
+      const totalHours = outreachData.reduce(
+        (sum, entry) => sum + entry.hours,
+        0,
+      );
+
+      return totalHours;
+    } catch (error) {
+      console.error('Error getting total team outreach hours:', error);
+      return 0;
+    }
+  }
+
+  async getTopMembersByHours(limit: number = 5) {
+    try {
+      const outreachData = await this.parseAllOutreachData();
+
+      if (outreachData.length === 0) {
+        return [];
+      }
 
       // Group by user and sum hours
       const userHoursMap = new Map<string, number>();
