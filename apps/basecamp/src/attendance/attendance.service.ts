@@ -251,21 +251,7 @@ export class AttendanceService {
       new Date().getTime() - new Date(lastOperation.date).getTime() >
       1000 * 60 * 60 * 18
     ) {
-      try {
-        await this.performAttendanceOperation(
-          discordId,
-          discordName,
-          guildId,
-          'signIn',
-          new Date(new Date().getTime() - 1000 * 60 * 60 * 1.5),
-        );
-      } catch (error) {
-        this.logger.error(`Failed to sign out: ${error}`);
-        return {
-          success: false,
-          message: 'Failed to sign out.',
-        };
-      }
+      return this.signIn(discordId, guildId, discordName, code);
     }
 
     try {
