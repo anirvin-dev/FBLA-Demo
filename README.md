@@ -1,30 +1,42 @@
-# Polar Edge
+# Yolo — Byte-Sized Business Boost
 
 ## About
 
-Polar Edge is a scouting application for _FIRST_ Robotics Competition, built by Team 3506, YETI Robotics.
+Yolo is a business discovery and rewards platform that helps users find local businesses, leave reviews, and earn points redeemable with partner retailers. This is an FBLA demo application.
 
 ## Setup
 
 ### Prerequisites
 
-Polar Edge requires a local installation of [Node.js](https://nodejs.org/en/download/), and [Docker Desktop](https://www.docker.com/products/docker-desktop/)/[PostgreSQL](https://www.postgresql.org/download/) to run. We recommend using [nvm](https://github.com/nvm-sh/nvm) (MacOS/Linux) or [fnm](https://github.com/Schniz/fnm) (Windows) to manage your Node.js installation.
+Yolo requires a local installation of [Node.js](https://nodejs.org/en/download/) and [pnpm](https://pnpm.io/installation). We recommend using [nvm](https://github.com/nvm-sh/nvm) (MacOS/Linux) or [fnm](https://github.com/Schniz/fnm) (Windows) to manage your Node.js installation.
 
-### Local Setup
+### Quick Start (Demo Mode)
 
-Setting up Polar Edge requires running a local instance of the database, and building the application. If Docker Desktop is installed and running, this will be handled automatically on dev startup. Otherwise, you will need to start the database manually.
+This is a **demo application** that runs entirely in the browser with no external dependencies:
 
-In the root directory, run `pnpm install` to install the dependencies for the entire project. We recommend also installing the `turbo` CLI globally to make running commands easier. This can be done by running `pnpm install -g turbo`.
+1. Clone the repository
+2. Run `pnpm install` in the root directory
+3. Run `pnpm dev:scouting` to start the development server
+4. Open `http://localhost:3000` in your browser
+5. Click "Get Started" and use the demo login
 
-Two `.env.local` files are required for the project to build: one for the Next.js frontend, and one for the database package.
+**No environment variables or external services required!** All data is stored locally in browser localStorage.
 
-- `apps/web/.env.local`: This file is used to configure the Next.js frontend. It should be copied from `apps/web/.env.example`.
-- `packages/database/.env.local`: This file is used to configure the database. It should be copied from `packages/database/.env.example`.
+### Demo Features
 
-> If you are not using Docker Desktop, ensure that the `DATABASE_URL` in `packages/database/.env.local` points to your local PostgreSQL instance.
+- **Business Discovery**: Browse and search local businesses by category
+- **Reviews & Ratings**: Leave reviews and earn points
+- **Points System**: Earn points through reviews and purchases, redeem with partners
+- **Bookmarks**: Save your favorite businesses
+- **Bot Verification**: Simple challenge before posting reviews or claiming deals
+- **Dev Admin Panel**: Seed demo data, reset, and toggle dev mode (`/admin/dev`)
 
-Once the dependencies are installed and `.env.local` files are configured, you can start the development server by running `turbo dev`.
+### Development
 
-## Documentation
+For development with hot reload:
+```bash
+pnpm install
+pnpm dev:scouting
+```
 
-Documentation for the project can be found on the [YETI Robotics' Wiki](https://wiki.yetirobotics.org/books/polar-edge-analytics).
+The app will be available at `http://localhost:3000`.

@@ -1,5 +1,5 @@
 {
-	"extends": "@repo/typescript-config/nextjs.json",
+	"extends": "../../packages/typescript-config/nextjs.json",
 	"compilerOptions": {
 		"baseUrl": ".",
 		"paths": {
@@ -11,16 +11,14 @@
 				"name": "next"
 			}
 		],
-		"declaration": false,
-		"declarationMap": false
+		"resolveJsonModule": true,
+		"esModuleInterop": true
 	},
 	"include": [
 		"next-env.d.ts",
-		"next.config.ts",
 		"**/*.ts",
 		"**/*.tsx",
-		".next/types/**/*.ts",
-		"eslint.config.mjs"
+		".next/types/**/*.ts"
 	],
 	"exclude": ["node_modules"]
 }

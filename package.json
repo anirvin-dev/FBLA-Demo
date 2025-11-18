@@ -1,5 +1,5 @@
 {
-	"name": "polar-edge-analytics",
+	"name": "yolo-business-boost",
 	"private": true,
 	"scripts": {
 		"build": "turbo run build",

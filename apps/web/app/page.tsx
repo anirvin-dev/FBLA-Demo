@@ -1,6 +1,5 @@
 import { SnowfallComponent } from "@/components/snowfall/snowfall";
-import { auth, signIn } from "@/lib/auth";
-import { UserRole } from "@/lib/database/schema";
+import Logo from "@/components/logo";
 import { Badge } from "@repo/ui/components/badge";
 import { Button } from "@repo/ui/components/button";
 import Link from "next/link";
@@ -8,13 +7,8 @@ import { redirect } from "next/navigation";
 
 async function enterScoutingSite() {
 	"use server";
-	const authInfo = await auth();
-
-	if (authInfo?.user && authInfo.user.role !== UserRole.BANISHED) {
-		redirect("/scout");
-	}
-
-	await signIn("discord", { redirectTo: "/scout" });
+	// For the FBLA demo, we skip real auth and go straight to the app.
+	redirect("/discover");
 }
 
 export default function Home() {
@@ -30,7 +24,7 @@ export default function Home() {
 				<div className="container mx-auto flex items-center justify-end">
 					<div className="flex items-center space-x-8">
 						<div className="space-x-8 text-white/90">
-							{[{ name: "Data", href: "/analysis" }].map(
+							{[{ name: "Discover", href: "/discover" }].map(
 								(item) => (
 									<Link
 										key={item.name}
@@ -60,6 +54,10 @@ export default function Home() {
 			<main className="relative flex min-h-screen flex-col items-center justify-center px-4">
 				<div className="relative space-y-6 text-center">
 					<div className="mb-4 flex justify-center">
+						<Logo className="h-16 w-auto drop-shadow-glow" variant="light" />
+					</div>
+
+					<div className="mb-4 flex justify-center">
 						<Badge
 							variant="secondary"
 							className="shadow-glow border border-white/20 bg-white/10 text-white backdrop-blur-md"
@@ -69,14 +67,13 @@ export default function Home() {
 					</div>
 
 					<h1 className="drop-shadow-glow mb-6 text-5xl font-bold text-white md:text-6xl lg:text-7xl">
-						Polar Edge Analytics
+						Yolo
 					</h1>
 
 					<p className="mx-auto mb-8 max-w-2xl text-lg text-white/90 drop-shadow md:text-xl">
-						Publicly accessible, advanced scouting data for teams in
-						North Carolina.
+						Byte-Sized Business Boost
 						<span className="mt-2 block font-semibold">
-							Brought to you by YETI Robotics.
+							Discover local businesses, earn points, and get rewarded for your reviews.
 						</span>
 					</p>
 
@@ -87,7 +84,7 @@ export default function Home() {
 								variant="ghost"
 								className="border border-white/20 p-5 text-lg text-white backdrop-blur-sm hover:bg-white/10 hover:text-blue-100"
 							>
-								Scout →
+								Get Started →
 							</Button>
 						</form>
 					</div>

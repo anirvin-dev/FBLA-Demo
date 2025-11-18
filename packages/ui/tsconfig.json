@@ -1,12 +1,13 @@
 {
-    "extends": "@repo/typescript-config/react-library.json",
-    "compilerOptions": {
-      "baseUrl": ".",
-      "paths": {
-        "@repo/ui/*": ["./src/*"]
-      }
-    },
-    "include": ["."],
-    "exclude": ["node_modules", "dist"]
-  }
-  
+  "extends": "../../packages/typescript-config/react-library.json",
+  "compilerOptions": {
+    "baseUrl": ".",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "paths": {
+      "@repo/ui/*": ["./src/*"]
+    }
+  },
+  "include": ["."],
+  "exclude": ["node_modules", "dist"]
+}

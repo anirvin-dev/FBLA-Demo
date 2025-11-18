@@ -1,0 +1,87 @@
+[
+	{
+		"id": "deal_001",
+		"businessId": "biz_001",
+		"title": "10% Off Morning Pastries",
+		"description": "Get 10% off all pastries and croissants when you visit before 10 AM",
+		"expires": "2025-12-31T23:59:59Z",
+		"terms": "Valid Monday-Friday only. Cannot be combined with other offers."
+	},
+	{
+		"id": "deal_002",
+		"businessId": "biz_002",
+		"title": "Free Phone Case with Purchase",
+		"description": "Receive a free protective phone case with any smartphone purchase over $500",
+		"expires": "2025-11-30T23:59:59Z",
+		"pointsCost": 50,
+		"terms": "While supplies last. One per customer."
+	},
+	{
+		"id": "deal_003",
+		"businessId": "biz_003",
+		"title": "First Class Free",
+		"description": "New members get their first yoga class absolutely free! No strings attached.",
+		"expires": "2025-12-31T23:59:59Z",
+		"terms": "Valid for new members only. Must register online."
+	},
+	{
+		"id": "deal_004",
+		"businessId": "biz_004",
+		"title": "Buy 5 Coffees, Get 1 Free",
+		"description": "Loyalty punch card - your 6th coffee is on us!",
+		"expires": "2026-01-31T23:59:59Z",
+		"terms": "Valid for regular size coffees only."
+	},
+	{
+		"id": "deal_005",
+		"businessId": "biz_005",
+		"title": "20% Off Spring Collection",
+		"description": "Take 20% off all items from our new spring collection",
+		"expires": "2025-05-31T23:59:59Z",
+		"pointsCost": 75,
+		"terms": "Excludes sale items and accessories."
+	},
+	{
+		"id": "deal_006",
+		"businessId": "biz_007",
+		"title": "Lunch Special - $12.99",
+		"description": "Enjoy our lunch thali special with appetizer, main, rice, naan, and dessert",
+		"expires": "2025-12-31T23:59:59Z",
+		"terms": "Available 11 AM - 3 PM weekdays only."
+	},
+	{
+		"id": "deal_007",
+		"businessId": "biz_008",
+		"title": "$5 Off Purchase Over $30",
+		"description": "Save $5 when you spend $30 or more on books",
+		"expires": "2025-12-31T23:59:59Z",
+		"pointsCost": 40,
+		"terms": "One-time use. Cannot be combined with other discounts."
+	},
+	{
+		"id": "deal_008",
+		"businessId": "biz_009",
+		"title": "Oil Change Special - $29.99",
+		"description": "Full synthetic oil change with free tire rotation and inspection",
+		"expires": "2025-11-30T23:59:59Z",
+		"terms": "Most vehicles. Appointment required."
+	},
+	{
+		"id": "deal_009",
+		"businessId": "biz_010",
+		"title": "Family Meal Deal",
+		"description": "Large pizza, salad, and 2-liter soda for just $24.99",
+		"expires": "2025-12-31T23:59:59Z",
+		"terms": "Dine-in or takeout. Not valid with delivery orders."
+	},
+	{
+		"id": "deal_010",
+		"businessId": "biz_011",
+		"title": "No Enrollment Fee",
+		"description": "Join now and skip the $99 enrollment fee! Month-to-month membership available.",
+		"expires": "2025-11-25T23:59:59Z",
+		"pointsCost": 100,
+		"terms": "New members only. Minimum 3-month commitment."
+	}
+]
+

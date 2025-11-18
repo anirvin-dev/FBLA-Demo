@@ -9,8 +9,8 @@ const libreFranklin = Libre_Franklin({
 });
 
 export const metadata: Metadata = {
-	title: "Polar Edge Analytics",
-	description: "A NC FRC Scouting Platform",
+	title: "Yolo — Byte-Sized Business Boost",
+	description: "Discover local businesses, earn points, and get rewarded for your reviews",
 };
 
 export default function RootLayout({

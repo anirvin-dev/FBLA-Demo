@@ -1,0 +1,57 @@
+[
+	{
+		"id": "partner_001",
+		"name": "Amazon",
+		"logo": "/images/partners/amazon.png",
+		"description": "$10 Amazon Gift Card",
+		"pointsRequired": 1000,
+		"rewardValue": "$10",
+		"available": true
+	},
+	{
+		"id": "partner_002",
+		"name": "Nike",
+		"logo": "/images/partners/nike.png",
+		"description": "$15 Nike Store Credit",
+		"pointsRequired": 1500,
+		"rewardValue": "$15",
+		"available": true
+	},
+	{
+		"id": "partner_003",
+		"name": "Adidas",
+		"logo": "/images/partners/adidas.png",
+		"description": "$15 Adidas Store Credit",
+		"pointsRequired": 1500,
+		"rewardValue": "$15",
+		"available": true
+	},
+	{
+		"id": "partner_004",
+		"name": "Levi's",
+		"logo": "/images/partners/levis.png",
+		"description": "$20 Levi's Gift Card",
+		"pointsRequired": 2000,
+		"rewardValue": "$20",
+		"available": true
+	},
+	{
+		"id": "partner_005",
+		"name": "Starbucks",
+		"logo": "/images/partners/starbucks.png",
+		"description": "$5 Starbucks Gift Card",
+		"pointsRequired": 500,
+		"rewardValue": "$5",
+		"available": true
+	},
+	{
+		"id": "partner_006",
+		"name": "Target",
+		"logo": "/images/partners/target.png",
+		"description": "$25 Target Gift Card",
+		"pointsRequired": 2500,
+		"rewardValue": "$25",
+		"available": true
+	}
+]
+

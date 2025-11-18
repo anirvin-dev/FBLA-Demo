@@ -24,16 +24,14 @@ import {
 	SidebarRail,
 } from "@repo/ui/components/sidebar";
 import {
-	Calendar,
-	ChartBar,
-	FoldHorizontal,
-	Grid2X2,
+	Award,
+	Bookmark,
+	Home,
 	LogIn,
 	LogOut,
-	NotepadText,
-	Sparkles,
-	Users,
-	Wrench,
+	Search,
+	Settings,
+	Store,
 } from "lucide-react";
 import Link from "next/link";
 import { Session } from "next-auth";
@@ -41,40 +39,21 @@ import React from "react";
 
 const navbarData = [
 	{
-		title: "Scout",
-		role: UserRole.USER,
-		items: [{ name: "Stand Form", icon: NotepadText, href: "/scout" }],
-	},
-	{
-		title: "Analysis",
+		title: "Discover",
 		items: [
-			{ name: "Basic", icon: Grid2X2, href: "/analysis" },
-			{ name: "Advanced", icon: Sparkles, href: "/analysis/advanced" },
-			{
-				name: "Comparison",
-				icon: FoldHorizontal,
-				href: "/analysis/comparison",
-			},
+			{ name: "Home", icon: Home, href: "/discover" },
+			{ name: "Search", icon: Search, href: "/search" },
+			{ name: "Bookmarks", icon: Bookmark, href: "/bookmarks" },
 		],
 	},
 	{
-		title: "Admin",
+		title: "Rewards",
+		items: [{ name: "Points", icon: Award, href: "/points" }],
+	},
+	{
+		title: "Dev Tools",
 		role: UserRole.ADMIN,
-		items: [
-			{ name: "Tools", icon: Wrench, href: "/admin/tools" },
-			{ name: "Teams", icon: Users, href: "/admin/teams" },
-			{
-				name: "Scoutalytics",
-				icon: ChartBar,
-				href: "/admin/scoutalytics",
-			},
-
-			{
-				name: "Match Upload",
-				icon: Calendar,
-				href: "/admin/tools/match-upload",
-			},
-		],
+		items: [{ name: "Admin", icon: Settings, href: "/admin/dev" }],
 	},
 ];
 
@@ -128,7 +107,7 @@ export async function AppSidebar() {
 							>
 								<Logo className="!size-6" />
 								<span className="text-sm">
-									Polar Edge Analytics
+									Yolo
 								</span>
 							</Link>
 						</SidebarMenuButton>
